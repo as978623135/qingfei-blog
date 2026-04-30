@@ -2,18 +2,29 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Shield, ArrowLeft } from 'lucide-react';
+import { api } from '../services/api';
 
 const AdminLogin: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === '52ywq1314..') {
-      navigate('/admin/dashboard');
-    } else {
-      setError('密码错误');
+    setLoading(true);
+    setError('');
+    try {
+      const res = await api.login(password);
+      if (res.success) {
+        navigate('/admin/dashboard');
+      } else {
+        setError('密码错误');
+      }
+    } catch (err: any) {
+      setError(err.message || '登录失败');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,9 +61,10 @@ const AdminLogin: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full py-3 bg-gradient-to-r from-sky-500 to-sky-400 text-white rounded-xl font-medium hover:shadow-lg transition-shadow"
+              disabled={loading}
+              className="w-full py-3 bg-gradient-to-r from-sky-500 to-sky-400 text-white rounded-xl font-medium hover:shadow-lg transition-shadow disabled:opacity-60"
             >
-              登录
+              {loading ? '登录中...' : '登录'}
             </button>
           </form>
 
