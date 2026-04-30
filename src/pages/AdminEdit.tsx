@@ -1,0 +1,144 @@
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Save, X, Feather } from 'lucide-react';
+import { api, Post } from '../services/api';
+import MarkdownEditor from '../components/MarkdownEditor';
+
+const AdminEdit: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const isEdit = Boolean(id);
+
+  const [formData, setFormData] = useState({
+    title: '',
+    summary: '',
+    content: ''
+  });
+  const [loading, setLoading] = useState(isEdit);
+
+  useEffect(() => {
+    if (isEdit && id) {
+      loadPost(id);
+    }
+  }, [id, isEdit]);
+
+  const loadPost = async (postId: string) => {
+    try {
+      const post = await api.getPost(postId);
+      setFormData({
+        title: post.title,
+        summary: post.summary || '',
+        content: post.content
+      });
+    } catch (err) {
+      alert('加载文章失败');
+      navigate('/admin/dashboard');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (isEdit && id) {
+        await api.updatePost(id, formData);
+        alert('文章更新成功');
+      } else {
+        await api.createPost(formData);
+        alert('文章发布成功');
+      }
+      navigate('/admin/dashboard');
+    } catch (err: any) {
+      alert(err.message || '操作失败');
+    }
+  };
+
+  if (loading) {
+    return <div className="container py-20 text-center text-slate-400">加载中...</div>;
+  }
+
+  return (
+    <div className="container py-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white rounded-2xl shadow-lg border border-blue-100 p-8 max-w-6xl mx-auto"
+      >
+        <div className="flex items-center gap-3 mb-8 pb-4 border-b border-blue-100">
+          <Feather className="w-6 h-6 text-sky-500" />
+          <h1 className="text-2xl font-semibold text-slate-800">
+            {isEdit ? '编辑文章' : '新建文章'}
+          </h1>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-slate-600 mb-2">
+              文章标题 <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-sky-400 focus:outline-none transition-colors"
+              placeholder="请输入文章标题"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-600 mb-2">
+              文章摘要
+            </label>
+            <input
+              type="text"
+              value={formData.summary}
+              onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
+              className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-sky-400 focus:outline-none transition-colors"
+              placeholder="留空将自动提取正文前150字"
+            />
+            <p className="text-xs text-slate-400 mt-1">
+              如不填写，系统将自动提取正文前150字作为摘要
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-600 mb-2">
+              文章内容 <span className="text-red-500">*</span>
+            </label>
+            <MarkdownEditor
+              value={formData.content}
+              onChange={(value) => setFormData({ ...formData, content: value })}
+              placeholder="请输入文章内容，支持 Markdown 语法..."
+            />
+            <p className="text-xs text-slate-400 mt-1">
+              支持 Markdown 全语法：标题、加粗、斜体、列表、引用、代码块、表格、链接等
+            </p>
+          </div>
+
+          <div className="flex gap-4 pt-4">
+            <button
+              type="submit"
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-sky-500 to-cyan-400 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-sky-200 transition-all"
+            >
+              <Save className="w-4 h-4" />
+              {isEdit ? '保存修改' : '发布文章'}
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/admin/dashboard')}
+              className="flex items-center gap-2 px-6 py-3 bg-slate-100 text-slate-600 rounded-xl font-medium hover:bg-slate-200 transition-colors"
+            >
+              <X className="w-4 h-4" />
+              取消
+            </button>
+          </div>
+        </form>
+      </motion.div>
+    </div>
+  );
+};
+
+export default AdminEdit;

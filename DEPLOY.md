@@ -1,0 +1,241 @@
+# 腾讯云部署指南
+
+## 一、准备工作
+
+### 1. 购买腾讯云服务器
+- 登录腾讯云控制台：https://console.cloud.tencent.com/
+- 购买轻量应用服务器或云服务器 CVM（推荐 Ubuntu 22.04）
+- 配置安全组，开放端口：22(SSH)、80(HTTP)、443(HTTPS)、5000(应用端口)
+
+### 2. 购买域名并备案
+- 在腾讯云购买域名
+- 完成 ICP 备案（中国大陆服务器必须备案）
+- 在 DNS 解析中添加 A 记录指向服务器 IP
+
+## 二、服务器环境配置
+
+### 1. 连接服务器
+```bash
+ssh root@你的服务器IP
+```
+
+### 2. 安装 Node.js 和 pnpm
+```bash
+# 安装 Node.js 24.x
+curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# 安装 pnpm
+npm install -g pnpm
+
+# 验证安装
+node -v
+pnpm -v
+```
+
+### 3. 安装 Nginx
+```bash
+sudo apt update
+sudo apt install -y nginx
+```
+
+## 三、项目部署
+
+### 1. 上传项目代码
+
+**方式一：使用 Git（推荐）**
+```bash
+cd /var/www
+git clone 你的Git仓库地址 blog
+cd blog
+```
+
+**方式二：使用 SCP 上传**
+```bash
+# 在本地执行
+scp -r /path/to/your/project root@服务器IP:/var/www/blog
+```
+
+### 2. 安装依赖并构建
+```bash
+cd /var/www/blog
+
+# 安装前端依赖
+pnpm install
+
+# 构建前端
+pnpm run build
+
+# 安装后端依赖
+cd server
+pnpm install
+
+# 构建后端
+pnpm run build
+```
+
+## 四、Nginx 配置（反向代理）
+
+后端服务在 5000 端口同时提供 API 和前端静态文件，Nginx 只需做反向代理。
+
+### 1. 创建 Nginx 配置文件
+```bash
+sudo nano /etc/nginx/sites-available/blog
+```
+
+添加以下内容：
+```nginx
+server {
+    listen 80;
+    server_name qingfei.online www.qingfei.online;
+
+    location / {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+### 2. 启用配置
+```bash
+sudo ln -s /etc/nginx/sites-available/blog /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+## 五、SSL 证书配置（HTTPS）
+
+### 使用 Certbot 免费证书
+```bash
+# 安装 Certbot
+sudo apt install -y certbot python3-certbot-nginx
+
+# 申请证书
+sudo certbot --nginx -d qingfei.online -d www.qingfei.online
+
+# 自动续期测试
+sudo certbot renew --dry-run
+```
+
+## 六、PM2 进程管理
+
+### 1. 安装 PM2
+```bash
+npm install -g pm2
+```
+
+### 2. 创建启动配置文件
+```bash
+cat > /var/www/blog/server/ecosystem.config.js << 'EOF'
+module.exports = {
+  apps: [{
+    name: 'qingfei-blog',
+    script: './dist/server.js',
+    cwd: '/var/www/blog/server',
+    instances: 1,
+    autorestart: true,
+    watch: false,
+    max_memory_restart: '1G',
+    env: {
+      NODE_ENV: 'production',
+      PORT: 5000,
+      JWT_SECRET: '你的强密码密钥-请替换为随机字符串'
+    }
+  }]
+};
+EOF
+```
+
+### 3. 启动服务
+```bash
+cd /var/www/blog/server
+pm2 start ecosystem.config.js
+pm2 save
+pm2 startup
+```
+
+## 七、更新部署脚本
+
+创建自动部署脚本：
+```bash
+sudo nano /var/www/blog/deploy.sh
+```
+
+添加内容：
+```bash
+#!/bin/bash
+set -e
+
+cd /var/www/blog
+git pull origin main
+
+# 构建前端
+pnpm install
+pnpm run build
+
+# 构建后端
+cd server
+pnpm install
+pnpm run build
+
+# 重启服务
+pm2 restart qingfei-blog
+
+# 重启 Nginx
+sudo systemctl restart nginx
+
+echo "部署完成！"
+```
+
+赋予执行权限：
+```bash
+chmod +x /var/www/blog/deploy.sh
+```
+
+## 八、数据备份
+
+数据库文件位于 `/var/www/blog/server/data/blog.db`，建议定期备份：
+```bash
+# 手动备份
+cp /var/www/blog/server/data/blog.db /var/backups/blog-$(date +%Y%m%d).db
+
+# 或者加入 crontab 自动备份
+crontab -e
+# 添加：0 3 * * * cp /var/www/blog/server/data/blog.db /var/backups/blog-$(date +\%Y\%m\%d).db
+```
+
+## 九、常见问题
+
+### 1. 页面刷新 404
+后端已配置 `app.get('*')` 回退到 index.html，通常不需要额外处理。如果出现问题，检查 PM2 日志：
+```bash
+pm2 logs qingfei-blog
+```
+
+### 2. 数据库权限问题
+```bash
+chmod 755 /var/www/blog/server/data
+chmod 644 /var/www/blog/server/data/blog.db
+```
+
+### 3. better-sqlite3 编译失败
+```bash
+cd /var/www/blog/server
+npx prebuild-install
+```
+
+### 4. 修改管理员密码
+登录后台后，在管理员面板修改密码。默认密码为 `52ywq1314..`，**首次部署后务必修改**。
+
+### 5. 更新 JWT Secret
+编辑 `server/ecosystem.config.js`，将 `JWT_SECRET` 替换为强随机字符串，然后：
+```bash
+pm2 restart qingfei-blog
+```
