@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Save, X, Feather } from 'lucide-react';
+import { Save, X, Feather, Upload } from 'lucide-react';
 import { api, Post } from '../services/api';
 import MarkdownEditor from '../components/MarkdownEditor';
 
@@ -16,6 +16,7 @@ const AdminEdit: React.FC = () => {
     content: ''
   });
   const [loading, setLoading] = useState(isEdit);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isEdit && id) {
@@ -37,6 +38,40 @@ const AdminEdit: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      if (!content) return;
+
+      const lines = content.split('\n');
+      let title = '';
+      let body = content;
+
+      // 如果第一行是 Markdown 一级标题，提取为文章标题
+      if (lines[0]?.startsWith('# ')) {
+        title = lines[0].replace('# ', '').trim();
+        body = lines.slice(1).join('\n').trim();
+      } else {
+        // 否则使用文件名（去掉 .md 后缀）作为标题
+        title = file.name.replace(/\.md$/i, '');
+      }
+
+      setFormData(prev => ({
+        ...prev,
+        title,
+        content: body
+      }));
+    };
+    reader.readAsText(file);
+
+    // 清空 input 值，允许重复选择同一文件
+    e.target.value = '';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -66,11 +101,31 @@ const AdminEdit: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         className="bg-white rounded-2xl shadow-lg border border-blue-100 p-8 max-w-6xl mx-auto"
       >
-        <div className="flex items-center gap-3 mb-8 pb-4 border-b border-blue-100">
-          <Feather className="w-6 h-6 text-sky-500" />
-          <h1 className="text-2xl font-semibold text-slate-800">
-            {isEdit ? '编辑文章' : '新建文章'}
-          </h1>
+        <div className="flex items-center justify-between mb-8 pb-4 border-b border-blue-100">
+          <div className="flex items-center gap-3">
+            <Feather className="w-6 h-6 text-sky-500" />
+            <h1 className="text-2xl font-semibold text-slate-800">
+              {isEdit ? '编辑文章' : '新建文章'}
+            </h1>
+          </div>
+          {!isEdit && (
+            <>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".md,.markdown"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-2 px-5 py-2.5 bg-white text-slate-600 rounded-lg font-medium border border-slate-200 hover:border-sky-300 hover:text-sky-500 transition-all"
+              >
+                <Upload size={18} /> 导入 Markdown
+              </button>
+            </>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
