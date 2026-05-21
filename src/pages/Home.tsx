@@ -20,6 +20,8 @@ const Home: React.FC = () => {
   const [bgImage, setBgImage] = useState('');
   const [showBgPanel, setShowBgPanel] = useState(false);
   const [showMusicPanel, setShowMusicPanel] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 10;
 
   // 本地音乐播放器初始化
   useEffect(() => {
@@ -222,6 +224,17 @@ const Home: React.FC = () => {
       return matchSearch && matchCategory && matchTag && matchYear;
     });
   }, [posts, searchQuery, selectedCategory, selectedTag, selectedYear]);
+
+  // 当筛选条件变化时重置到第1页
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedCategory, selectedTag, selectedYear]);
+
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+  const paginatedPosts = useMemo(() => {
+    const start = (currentPage - 1) * postsPerPage;
+    return filteredPosts.slice(start, start + postsPerPage);
+  }, [filteredPosts, currentPage]);
 
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return '-';
@@ -462,7 +475,7 @@ const Home: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {filteredPosts.map((post, index) => (
+              {paginatedPosts.map((post, index) => (
                 <motion.article
                   key={post.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -490,6 +503,42 @@ const Home: React.FC = () => {
                   </Link>
                 </motion.article>
               ))}
+
+              {/* 分页器 */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 pt-4">
+                  <button
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1.5 rounded-lg text-sm border border-slate-200 bg-white text-slate-600 hover:bg-sky-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    上一页
+                  </button>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
+                        currentPage === page
+                          ? 'bg-sky-500 text-white'
+                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-sky-50'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1.5 rounded-lg text-sm border border-slate-200 bg-white text-slate-600 hover:bg-sky-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    下一页
+                  </button>
+                  <span className="text-xs text-slate-400 ml-2">
+                    共 {filteredPosts.length} 条
+                  </span>
+                </div>
+              )}
             </div>
           )}
         </main>
