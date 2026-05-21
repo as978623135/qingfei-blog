@@ -21,7 +21,7 @@ const Home: React.FC = () => {
   const [showBgPanel, setShowBgPanel] = useState(false);
   const [showMusicPanel, setShowMusicPanel] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const postsPerPage = 10;
+  const postsPerPage = 5;
 
   // 本地音乐播放器初始化
   useEffect(() => {
