@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Plus, Edit, Trash2, LogOut } from 'lucide-react';
+import { Plus, Edit, Trash2, LogOut, Home } from 'lucide-react';
 import { api, Post } from '../services/api';
 
 const AdminDashboard: React.FC = () => {
@@ -48,12 +48,21 @@ const AdminDashboard: React.FC = () => {
         </h1>
         <div className="flex gap-4">
           <Link
+            to="/"
+            className="flex items-center gap-2 px-5 py-2.5 bg-white text-slate-600 rounded-lg font-medium border border-slate-200 hover:border-sky-300 hover:text-sky-500 transition-all"
+          >
+            <Home size={18} /> 返回首页
+          </Link>
+          <Link
             to="/admin/edit"
             className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-sky-500 to-sky-400 text-white rounded-lg font-medium hover:shadow-lg hover:shadow-sky-500/30 transition-all"
           >
             <Plus size={18} /> 新建文章
           </Link>
-          <Link to="/admin" className="flex items-center gap-2 text-slate-400 hover:text-red-500 transition-colors">
+          <Link
+            to="/admin"
+            className="flex items-center gap-2 px-5 py-2.5 bg-white text-red-500 rounded-lg font-medium border border-red-200 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all"
+          >
             <LogOut size={18} /> 退出
           </Link>
         </div>
