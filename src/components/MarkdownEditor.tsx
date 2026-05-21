@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import { Bold, Italic, List, ListOrdered, Quote, Code, Link, Image, Table, Minus, Heading } from 'lucide-react';
 
 interface MarkdownEditorProps {
@@ -129,7 +130,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange, placeh
         />
         <div className="p-4 overflow-auto prose prose-slate max-w-none" style={{ minHeight: '400px' }}>
           {value ? (
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
               {value}
             </ReactMarkdown>
           ) : (

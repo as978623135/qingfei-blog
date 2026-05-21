@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 interface MarkdownRendererProps {
   content: string;
@@ -11,6 +12,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
     <div className="markdown-body prose prose-slate max-w-none">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeRaw]}
         components={{
           h1: ({ children }) => <h1 className="text-3xl font-bold text-slate-900 mb-6 pb-3 border-b border-slate-200">{children}</h1>,
           h2: ({ children }) => <h2 className="text-2xl font-semibold text-slate-800 mt-8 mb-4">{children}</h2>,
