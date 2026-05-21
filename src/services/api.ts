@@ -9,10 +9,12 @@ export interface Post {
   updated_at: string | null;
 }
 
+import safeStorage from '../utils/storage';
+
 const API_BASE = '';
 
 function getToken(): string | null {
-  return localStorage.getItem('admin_token');
+  return safeStorage.getItem('admin_token');
 }
 
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
@@ -107,7 +109,7 @@ export const api = {
       throw new Error(data.error || '登录失败');
     }
     if (data.token) {
-      localStorage.setItem('admin_token', data.token);
+      safeStorage.setItem('admin_token', data.token);
     }
     return data;
   }

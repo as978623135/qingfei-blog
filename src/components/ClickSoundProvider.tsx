@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
+import safeStorage from '../utils/storage';
 
 const STORAGE_KEY = 'clickSoundEnabled';
 
@@ -16,12 +17,12 @@ export const useClickSoundContext = () => React.useContext(ClickSoundContext);
 
 export const ClickSoundProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isEnabled, setIsEnabledState] = useState(() => {
-    return localStorage.getItem(STORAGE_KEY) === 'true';
+    return safeStorage.getItem(STORAGE_KEY) === 'true';
   });
   const audioContextRef = useRef<AudioContext | null>(null);
 
   const setEnabled = useCallback((enabled: boolean) => {
-    localStorage.setItem(STORAGE_KEY, enabled ? 'true' : 'false');
+    safeStorage.setItem(STORAGE_KEY, enabled ? 'true' : 'false');
     setIsEnabledState(enabled);
   }, []);
 
@@ -46,7 +47,11 @@ export const ClickSoundProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, [isEnabled]);
 
   useEffect(() => {
-    audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    try {
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    } catch {
+      audioContextRef.current = null;
+    }
 
     const handleClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;

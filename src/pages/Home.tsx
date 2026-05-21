@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Clock, Search, Folder, Tag, Archive, Home as HomeIcon, Settings, Palette, Volume2, VolumeX, Music } from 'lucide-react';
 import { api, Post } from '../services/api';
 import { useClickSoundContext } from '../components/ClickSoundProvider';
+import safeStorage from '../utils/storage';
 
 const Home: React.FC = () => {
   const { isEnabled, setEnabled } = useClickSoundContext();
@@ -121,8 +122,8 @@ const Home: React.FC = () => {
   const handleColorSelect = (color: string) => {
     setSelectedColor(color);
     setBgType('color');
-    localStorage.setItem('blog_bg_type', 'color');
-    localStorage.setItem('blog_bg_color', color);
+    safeStorage.setItem('blog_bg_type', 'color');
+    safeStorage.setItem('blog_bg_color', color);
     document.body.style.background = color;
   };
 
@@ -134,8 +135,8 @@ const Home: React.FC = () => {
         const result = event.target?.result as string;
         setBgImage(result);
         setBgType('image');
-        localStorage.setItem('blog_bg_type', 'image');
-        localStorage.setItem('blog_bg_image', result);
+        safeStorage.setItem('blog_bg_type', 'image');
+        safeStorage.setItem('blog_bg_image', result);
         document.body.style.background = `linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.85)), url(${result})`;
         document.body.style.backgroundSize = 'cover';
         document.body.style.backgroundPosition = 'center';
@@ -222,7 +223,8 @@ const Home: React.FC = () => {
     });
   }, [posts, searchQuery, selectedCategory, selectedTag, selectedYear]);
 
-  const formatDate = (dateStr: string) => {
+  const formatDate = (dateStr: string | null) => {
+    if (!dateStr) return '-';
     const date = new Date(dateStr);
     return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
   };

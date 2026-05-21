@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
+import safeStorage from '../utils/storage';
 
 const STORAGE_KEY = 'clickSoundEnabled';
 
@@ -7,11 +8,11 @@ export const useClickSound = () => {
   const enabledRef = useRef<boolean>(false);
 
   const isEnabled = () => {
-    return localStorage.getItem(STORAGE_KEY) === 'true';
+    return safeStorage.getItem(STORAGE_KEY) === 'true';
   };
 
   const setEnabled = (enabled: boolean) => {
-    localStorage.setItem(STORAGE_KEY, enabled ? 'true' : 'false');
+    safeStorage.setItem(STORAGE_KEY, enabled ? 'true' : 'false');
     enabledRef.current = enabled;
   };
 

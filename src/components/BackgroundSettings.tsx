@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Palette, Image, X, Check } from 'lucide-react';
+import safeStorage from '../utils/storage';
 
 const COLORS = [
   '#e0f2fe', '#f0f9ff', '#ffffff', '#fef3c7', '#fce7f3',
@@ -15,9 +16,9 @@ const BackgroundSettings: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const savedType = localStorage.getItem('blog_bg_type') as 'color' | 'image';
-    const savedColor = localStorage.getItem('blog_bg_color');
-    const savedImage = localStorage.getItem('blog_bg_image');
+    const savedType = safeStorage.getItem('blog_bg_type') as 'color' | 'image';
+    const savedColor = safeStorage.getItem('blog_bg_color');
+    const savedImage = safeStorage.getItem('blog_bg_image');
     
     if (savedType) setBgType(savedType);
     if (savedColor) setSelectedColor(savedColor);
@@ -41,8 +42,8 @@ const BackgroundSettings: React.FC = () => {
   const handleColorSelect = (color: string) => {
     setSelectedColor(color);
     setBgType('color');
-    localStorage.setItem('blog_bg_type', 'color');
-    localStorage.setItem('blog_bg_color', color);
+    safeStorage.setItem('blog_bg_type', 'color');
+    safeStorage.setItem('blog_bg_color', color);
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,8 +54,8 @@ const BackgroundSettings: React.FC = () => {
         const result = event.target?.result as string;
         setBgImage(result);
         setBgType('image');
-        localStorage.setItem('blog_bg_type', 'image');
-        localStorage.setItem('blog_bg_image', result);
+        safeStorage.setItem('blog_bg_type', 'image');
+        safeStorage.setItem('blog_bg_image', result);
       };
       reader.readAsDataURL(file);
     }
@@ -140,7 +141,7 @@ const BackgroundSettings: React.FC = () => {
                   <div className="relative">
                     <img src={bgImage} alt="背景预览" className="w-full h-20 object-cover rounded-lg" />
                     <button
-                      onClick={() => { setBgImage(''); localStorage.removeItem('blog_bg_image'); }}
+                      onClick={() => { setBgImage(''); safeStorage.removeItem('blog_bg_image'); }}
                       className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs"
                     >
                       <X size={10} />
