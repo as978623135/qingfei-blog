@@ -53,6 +53,16 @@ const PostDetail: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
+        <div className="mb-6">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-sky-200 bg-white text-sky-600 hover:bg-sky-50 transition-colors text-sm"
+          >
+            <ArrowLeft size={16} />
+            返回首页
+          </Link>
+        </div>
+
         <header className="text-center pb-10 mb-10 border-b border-sky-100">
           <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-5">
             {post.title}
