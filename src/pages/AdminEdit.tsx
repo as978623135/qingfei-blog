@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Save, X, Feather, Upload } from 'lucide-react';
+import { Save, X, Feather, Upload, Plus, Tag } from 'lucide-react';
 import { api, Post } from '../services/api';
 import MarkdownEditor from '../components/MarkdownEditor';
 
@@ -13,16 +13,30 @@ const AdminEdit: React.FC = () => {
   const [formData, setFormData] = useState({
     title: '',
     summary: '',
-    content: ''
+    content: '',
+    category: ''
   });
   const [loading, setLoading] = useState(isEdit);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [showNewCategory, setShowNewCategory] = useState(false);
+  const [newCategory, setNewCategory] = useState('');
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    loadCategories();
     if (isEdit && id) {
       loadPost(id);
     }
   }, [id, isEdit]);
+
+  const loadCategories = async () => {
+    try {
+      const cats = await api.getCategories();
+      setCategories(cats);
+    } catch {
+      setCategories([]);
+    }
+  };
 
   const loadPost = async (postId: string) => {
     try {
@@ -30,7 +44,8 @@ const AdminEdit: React.FC = () => {
       setFormData({
         title: post.title,
         summary: post.summary || '',
-        content: post.content
+        content: post.content,
+        category: post.category || ''
       });
     } catch (err) {
       alert('加载文章失败');
@@ -158,6 +173,68 @@ const AdminEdit: React.FC = () => {
               如不填写，系统将自动提取正文前150字作为摘要
             </p>
           </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-600 mb-2">
+              文章分类 <span className="text-red-500">*</span>
+            </label>
+            <div className="flex gap-3">
+              <select
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                className="flex-1 px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-sky-400 focus:outline-none transition-colors bg-white"
+                required
+              >
+                <option value="">请选择分类</option>
+                {categories.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => setShowNewCategory(true)}
+                className="flex items-center gap-1 px-4 py-3 bg-slate-50 text-slate-600 rounded-xl font-medium border border-slate-200 hover:border-sky-300 hover:text-sky-500 transition-all whitespace-nowrap"
+              >
+                <Plus size={16} /> 新建
+              </button>
+            </div>
+          </div>
+
+          {showNewCategory && (
+            <div className="flex gap-3">
+              <input
+                type="text"
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+                className="flex-1 px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-sky-400 focus:outline-none transition-colors"
+                placeholder="输入新分类名称"
+                autoFocus
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  if (newCategory.trim()) {
+                    setFormData({ ...formData, category: newCategory.trim() });
+                    if (!categories.includes(newCategory.trim())) {
+                      setCategories([...categories, newCategory.trim()]);
+                    }
+                    setNewCategory('');
+                    setShowNewCategory(false);
+                  }
+                }}
+                className="px-5 py-3 bg-sky-500 text-white rounded-xl font-medium hover:bg-sky-600 transition-colors"
+              >
+                确认
+              </button>
+              <button
+                type="button"
+                onClick={() => { setShowNewCategory(false); setNewCategory(''); }}
+                className="px-5 py-3 bg-slate-100 text-slate-600 rounded-xl font-medium hover:bg-slate-200 transition-colors"
+              >
+                取消
+              </button>
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-slate-600 mb-2">

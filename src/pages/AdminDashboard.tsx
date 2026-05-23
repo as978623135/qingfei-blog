@@ -76,6 +76,7 @@ const AdminDashboard: React.FC = () => {
             <thead>
               <tr className="bg-gradient-to-r from-sky-50 to-sky-100">
                 <th className="text-left px-6 py-4 text-sm font-semibold text-slate-600 uppercase tracking-wide">标题</th>
+                <th className="text-left px-6 py-4 text-sm font-semibold text-slate-600 uppercase tracking-wide">分类</th>
                 <th className="text-left px-6 py-4 text-sm font-semibold text-slate-600 uppercase tracking-wide">发布时间</th>
                 <th className="text-left px-6 py-4 text-sm font-semibold text-slate-600 uppercase tracking-wide">操作</th>
               </tr>
@@ -89,6 +90,11 @@ const AdminDashboard: React.FC = () => {
                   className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
                 >
                   <td className="px-6 py-4 font-medium text-slate-900">{post.title}</td>
+                  <td className="px-6 py-4">
+                    <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-sky-50 text-sky-600">
+                      {post.category || '未分类'}
+                    </span>
+                  </td>
                   <td className="px-6 py-4 text-slate-500">{formatDate(post.created_at)}</td>
                   <td className="px-6 py-4">
                     <div className="flex gap-2">
