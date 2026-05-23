@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import Footer from './components/Footer';
 import SeasonalEffect from './components/SeasonalEffect';
 import { ClickSoundProvider } from './components/ClickSoundProvider';
+import ScrollToButtons from './components/ScrollToButtons';
 import Home from './pages/Home';
 import PostDetail from './pages/PostDetail';
 import AdminLogin from './pages/AdminLogin';
@@ -54,6 +55,7 @@ const App: React.FC = () => {
             </Routes>
           </main>
           <Footer />
+          <ScrollToButtons />
         </div>
       </ClickSoundProvider>
     </ErrorBoundary>
