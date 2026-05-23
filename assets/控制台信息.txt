@@ -1,0 +1,436 @@
+index.1cacbd6a.js:1  Logger  @coze-arch/flags  Load FG from context start at 424.69999998807907ms and spend 213ms
+index.1cacbd6a.js:1  Logger  info  app inited
+index.1cacbd6a.js:1  Logger  info  app init
+index.1cacbd6a.js:1  Logger  info  coze_custom_tti {value: 1514, extra: {…}}
+inspector.js:7 Image URL being set: https://coze-coding-project.tos.coze.site/default/project_default_icon_7.svg?sign=1779459520-eb27fe0d46-0-288955620947d06931693b02c7fd3bb2dd64b241318fda0270520ba3e067c229
+index.1cacbd6a.js:1  Logger  ide  ws  [WsService][sendRequest] 当前未连接，进入队列等待发送: repo_version.commit.search
+index.1cacbd6a.js:1  Logger  info  coze_custom_tti {value: 1551, extra: {…}}
+inspector.js:7 Image URL being set: https://coze-coding-project.tos.coze.site/default/project_default_icon_7.svg?sign=1779459520-eb27fe0d46-0-288955620947d06931693b02c7fd3bb2dd64b241318fda0270520ba3e067c229
+index.1cacbd6a.js:1  Logger  ide  ws  [WsService][sendRequest] 当前未连接，进入队列等待发送: file.stat
+index.1cacbd6a.js:1  Logger  ide  ws  [WsService][sendRequest] 当前未连接，进入队列等待发送: repo_version.commit.status
+index.1cacbd6a.js:1  Logger  builder-chat-websocket-channel  channel  websocketManager init {timeoutInterval: 4000, maxRetries: 10, automaticOpen: false, initReconnectInterval: 1000, maxReconnectInterval: 10000, …}
+index.1cacbd6a.js:1  Logger  ide  ws  [WsService][sendRequest] 当前未连接，进入队列等待发送: web.is_server_start
+index.1cacbd6a.js:1  Logger  tab-session-websocket-channel  channel  websocketManager init {timeoutInterval: 4000, maxRetries: 10, automaticOpen: false, initReconnectInterval: 1000, maxReconnectInterval: 10000, …}
+index.1cacbd6a.js:1  Logger  ide  ws  [WsService][sendRequest] 当前未连接，进入队列等待发送: repo_version.commit.retrieve
+index.1cacbd6a.js:1  Logger  ide  ws  [WsService][sendRequest] 当前未连接，进入队列等待发送: repo_version.commit.retrieve
+index.1cacbd6a.js:1  Logger  ide  ws  [WsService][sendRequest] 当前未连接，进入队列等待发送: repo_version.commit.retrieve
+slardar_umd_cn.js:2 [SDK] 1779373122715        0 already inited
+R @ slardar_umd_cn.js:2
+init @ slardar_umd_cn.js:2
+init @ 4379.387d8f99.js:1
+$ @ 4379.387d8f99.js:1
+createAndRecordChatCore @ 4379.387d8f99.js:1
+(匿名) @ 4379.387d8f99.js:1
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ 4379.387d8f99.js:1
+e0 @ 4379.387d8f99.js:1
+(匿名) @ 4379.387d8f99.js:1
+t.A @ 3693.f352d84a.js:2
+(匿名) @ 4379.387d8f99.js:1
+e8 @ 4379.387d8f99.js:1
+ad @ lib-react.abf77b88.js:2
+i @ lib-react.abf77b88.js:2
+oO @ lib-react.abf77b88.js:2
+oF @ lib-react.abf77b88.js:2
+oC @ lib-react.abf77b88.js:2
+r8 @ lib-react.abf77b88.js:2
+(匿名) @ lib-react.abf77b88.js:2
+XMLHttpRequest.send
+(匿名) @ slardar_umd_cn.js:2
+s @ slardar_umd_cn.js:2
+e.send @ sdk-glue.js:2
+XMLHttpRequest.send @ inspector.js:7
+e @ bdms.js:2
+e @ bdms.js:2
+(匿名) @ lib-axios.ac8f6e76.js:1
+xhr @ lib-axios.ac8f6e76.js:1
+te @ lib-axios.ac8f6e76.js:1
+Promise.then
+_request @ lib-axios.ac8f6e76.js:1
+request @ lib-axios.ac8f6e76.js:1
+(匿名) @ lib-axios.ac8f6e76.js:1
+i @ index.1cacbd6a.js:1
+ListConversations @ 1724.b9fd3c25.js:1
+(匿名) @ 4379.387d8f99.js:1
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ 4379.387d8f99.js:1
+(匿名) @ 4379.387d8f99.js:1
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ 4379.387d8f99.js:1
+(匿名) @ 4379.387d8f99.js:1
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ 4379.387d8f99.js:1
+onStart @ 4379.387d8f99.js:1
+onStart @ 4379.387d8f99.js:1
+(匿名) @ 4379.387d8f99.js:1
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ lib-polyfill.7f6c77a2.js:1
+start @ 4379.387d8f99.js:1
+(匿名) @ 4379.387d8f99.js:1
+uI @ lib-react.abf77b88.js:2
+oU @ lib-react.abf77b88.js:2
+oC @ lib-react.abf77b88.js:2
+r8 @ lib-react.abf77b88.js:2
+(匿名) @ lib-react.abf77b88.js:2
+oI @ lib-react.abf77b88.js:2
+oS @ lib-react.abf77b88.js:2
+x @ lib-react.abf77b88.js:2
+T @ lib-react.abf77b88.js:2
+postMessage
+u @ lib-react.abf77b88.js:2
+M @ lib-react.abf77b88.js:2
+n.unstable_scheduleCallback @ lib-react.abf77b88.js:2
+ow @ lib-react.abf77b88.js:2
+ok @ lib-react.abf77b88.js:2
+aH @ lib-react.abf77b88.js:2
+(匿名) @ 4379.387d8f99.js:1
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ 4379.387d8f99.js:1
+uI @ lib-react.abf77b88.js:2
+oU @ lib-react.abf77b88.js:2
+(匿名) @ lib-react.abf77b88.js:2
+x @ lib-react.abf77b88.js:2
+T @ lib-react.abf77b88.js:2
+postMessage
+u @ lib-react.abf77b88.js:2
+M @ lib-react.abf77b88.js:2
+n.unstable_scheduleCallback @ lib-react.abf77b88.js:2
+ow @ lib-react.abf77b88.js:2
+ok @ lib-react.abf77b88.js:2
+aH @ lib-react.abf77b88.js:2
+(匿名) @ 3693.f352d84a.js:2
+r.current.r.current @ 3693.f352d84a.js:2
+e.setState @ 3693.f352d84a.js:2
+(匿名) @ 3693.f352d84a.js:2
+(匿名) @ lib-polyfill.7f6c77a2.js:1
+a @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+c @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ lib-polyfill.7f6c77a2.js:1
+d @ lib-polyfill.7f6c77a2.js:1
+e.runAsync @ 3693.f352d84a.js:2
+e.run @ 3693.f352d84a.js:2
+(匿名) @ 3693.f352d84a.js:2
+(匿名) @ 3693.f352d84a.js:2
+uI @ lib-react.abf77b88.js:2
+oU @ lib-react.abf77b88.js:2
+(匿名) @ lib-react.abf77b88.js:2
+oI @ lib-react.abf77b88.js:2
+oC @ lib-react.abf77b88.js:2
+r8 @ lib-react.abf77b88.js:2
+(匿名) @ lib-react.abf77b88.js:2
+XMLHttpRequest.send
+(匿名) @ slardar_umd_cn.js:2
+s @ slardar_umd_cn.js:2
+e.send @ sdk-glue.js:2
+XMLHttpRequest.send @ inspector.js:7
+e @ bdms.js:2
+e @ bdms.js:2
+(匿名) @ lib-axios.ac8f6e76.js:1
+xhr @ lib-axios.ac8f6e76.js:1
+tt @ lib-axios.ac8f6e76.js:1
+Promise.then
+_request @ lib-axios.ac8f6e76.js:1
+request @ lib-axios.ac8f6e76.js:1
+(匿名) @ lib-axios.ac8f6e76.js:1
+(匿名) @ 8591.79314290.js:2
+a @ 4639.701d7f5a.js:1
+(匿名) @ index.1cacbd6a.js:1
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ lib-polyfill.7f6c77a2.js:1
+fetchAccountInfo @ index.1cacbd6a.js:1
+(匿名) @ index.1cacbd6a.js:1
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ index.1cacbd6a.js:1
+uI @ lib-react.abf77b88.js:2
+oU @ lib-react.abf77b88.js:2
+(匿名) @ lib-react.abf77b88.js:2
+x @ lib-react.abf77b88.js:2
+T @ lib-react.abf77b88.js:2
+postMessage
+u @ lib-react.abf77b88.js:2
+T @ lib-react.abf77b88.js:2
+postMessage
+u @ lib-react.abf77b88.js:2
+M @ lib-react.abf77b88.js:2
+n.unstable_scheduleCallback @ lib-react.abf77b88.js:2
+ow @ lib-react.abf77b88.js:2
+ok @ lib-react.abf77b88.js:2
+o4 @ lib-react.abf77b88.js:2
+ie.render.o7.render @ lib-react.abf77b88.js:2
+(匿名) @ index.1cacbd6a.js:1
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+Promise.then
+n @ lib-polyfill.7f6c77a2.js:1
+u @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ lib-polyfill.7f6c77a2.js:1
+(匿名) @ lib-polyfill.7f6c77a2.js:1
+70850 @ index.1cacbd6a.js:1
+c @ index.1cacbd6a.js:1
+(匿名) @ index.1cacbd6a.js:1
+c.O @ index.1cacbd6a.js:1
+(匿名) @ index.1cacbd6a.js:1
+(匿名) @ index.1cacbd6a.js:1
+index.1cacbd6a.js:1  Logger  chat-core  RequestManager  RequestManager is initialized {key: 'builder-chat', scenes: {…}}
+index.1cacbd6a.js:1  Logger  chat-core  chat-sdk  SDK 初始化完成 {key: 'builder-chat'}
+index.1cacbd6a.js:1  Logger  ide  ws  [WsService][sendRequest] 当前未连接，进入队列等待发送: sandbox.project_status
+index.1cacbd6a.js:1  Logger  ide  ws  [WsService][sendRequest] 当前未连接，进入队列等待发送: repo_version.commit.retrieve
+index.1cacbd6a.js:1  Logger  ide  ws  [WsService][sendRequest] 当前未连接，进入队列等待发送: repo_version.commit.retrieve
+index.1cacbd6a.js:1  Logger  ide  ws  [WsService][sendRequest] 当前未连接，进入队列等待发送: repo_version.commit.retrieve
+index.1cacbd6a.js:1  Logger  ide  ws  [WsService][sendRequest] 当前未连接，进入队列等待发送: web.is_server_start
+index.1cacbd6a.js:1  Logger  ide  ws  [WsService]开始连接
+index.1cacbd6a.js:1  Logger  ide  ws  [WsService]new Websocket1779373123869
+index.1cacbd6a.js:1  Logger  ide  ws  Event: ws_start_connect {url: 'wss://code.coze.cn/ws/devbox/7634514286341259310/api/ws?source=ide&ts=1779373123869'}
+index.1cacbd6a.js:1  Logger  ide  ws  [WsService][sendRequest] 当前未连接，进入队列等待发送: web.is_server_start
+inspector.js:7 Image URL being set: data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7
+index.1cacbd6a.js:1  Logger  ide  ws  Event: ws_open {info: 'websocket 已连接', url: 'wss://code.coze.cn/ws/devbox/7634514286341259310/api/ws?source=ide'}
+index.1cacbd6a.js:1  Logger  ide  ws  [WsService]🎉 JSON-RPC 连接已建立
+index.1cacbd6a.js:1  Logger  ide  ws  [WsService]🚀 开始重放队列消息, 数量:13
+index.1cacbd6a.js:1  Logger  ide  ws  Event: ws_error {code: 1001, error: l: File not found: package.json
+    at https://lf-coze-web-cdn.coze.cn/obj/coze-web-cn/coze-coding/…, message: 'File not found: package.json', from: 'send_request_error file.read'}
+index.1cacbd6a.js:1  Logger  ide  ws  [WsService]发送消息失败:{"code":1001}

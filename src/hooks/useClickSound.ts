@@ -38,7 +38,11 @@ export const useClickSound = () => {
 
   useEffect(() => {
     enabledRef.current = isEnabled();
-    audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    try {
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    } catch {
+      audioContextRef.current = null;
+    }
 
     const handleClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;

@@ -4,6 +4,8 @@ const safeStorage = {
     try {
       return localStorage.getItem(key);
     } catch {
+      // SecurityError: 跨域 iframe 中禁止访问 storage
+      // QuotaExceededError: storage 已满
       return null;
     }
   },
@@ -11,14 +13,14 @@ const safeStorage = {
     try {
       localStorage.setItem(key, value);
     } catch {
-      // silently fail
+      // SecurityError / QuotaExceededError — 静默失败，不阻断渲染链
     }
   },
   removeItem(key: string): void {
     try {
       localStorage.removeItem(key);
     } catch {
-      // silently fail
+      // 静默失败
     }
   },
 };

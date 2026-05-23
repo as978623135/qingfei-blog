@@ -1,0 +1,111 @@
+# 项目概述
+
+qingfei-blog-fullstack（青飞的小站）是一个基于 React + TypeScript + Express + SQLite 的个人博客系统。
+
+## 技术栈
+
+| 类别 | 技术 |
+|------|------|
+| 前端语言 | TypeScript |
+| 前端框架 | React 18 |
+| 前端构建 | Webpack 5 |
+| CSS 框架 | Tailwind CSS |
+| 路由 | react-router-dom |
+| 动画 | framer-motion |
+| 后端 | Express 4 |
+| 数据库 | better-sqlite3 |
+| 认证 | JWT + bcryptjs |
+| 包管理器 | pnpm |
+
+## 目录结构
+
+```
+├── src/                    # 前端源码
+│   ├── components/         # UI 组件
+│   ├── pages/              # 页面组件
+│   ├── hooks/              # 自定义 Hooks
+│   ├── services/           # API 服务（调用后端 /api）
+│   ├── styles/             # 样式文件
+│   ├── App.tsx
+│   └── index.tsx
+├── server/                 # 后端服务
+│   ├── src/
+│   │   ├── server.ts       # Express 入口
+│   │   ├── db/
+│   │   │   └── index.ts    # SQLite 数据库操作
+│   │   ├── routes/
+│   │   │   ├── posts.ts    # 文章 API
+│   │   │   └── auth.ts     # 认证 API
+│   │   └── middleware/
+│   │       └── auth.ts     # JWT 中间件
+│   ├── package.json
+│   └── tsconfig.json
+├── scripts/                # Coze 预览/部署脚本
+├── assets/                 # 静态资源
+├── dist/                   # 前端生产构建产物
+├── data/                   # SQLite 数据文件
+├── webpack.config.js
+├── package.json
+└── .coze                   # Coze 项目配置
+```
+
+## 关键入口
+
+- **前端开发**: `pnpm run dev`（webpack-dev-server，端口 3266）
+- **前端构建**: `pnpm run build`（输出到 dist/）
+- **后端开发**: `cd server && pnpm run dev`（ts-node，端口 3015）
+- **后端构建**: `cd server && pnpm run build`（输出到 server/dist/）
+- **类型检查**: `pnpm run typecheck`
+
+## 运行与预览
+
+### 架构
+
+- 开发模式：前端 webpack-dev-server (3266) + 后端 Express (3015)，前端通过 proxy 访问 /api
+- 预览/生产模式：后端 Express (5000) 同时提供 API 和前端静态文件
+
+### 预览链路
+
+- 根 `.coze`: `/workspace/projects/.coze`
+- preview 端口: `5000`
+- 预览 build: 安装前后端依赖 + 构建前端 dist/
+- 预览 run: 启动后端服务（NODE_ENV=production, PORT=5000），后端托管 dist/ 静态文件
+
+### 部署链路
+
+- 部署 build: 安装前后端依赖 + 构建前端 dist/ + 构建后端 server/dist/
+- 部署 run: 启动编译后的后端服务（NODE_ENV=production, PORT=5000）
+
+## API 端点
+
+| 方法 | 路径 | 说明 | 认证 |
+|------|------|------|------|
+| GET | /api/health | 健康检查 | 否 |
+| POST | /api/auth/login | 登录 | 否 |
+| GET | /api/posts | 获取所有文章 | 否 |
+| GET | /api/posts/:id | 获取单篇文章 | 否 |
+| POST | /api/posts | 创建文章 | Bearer Token |
+| PUT | /api/posts/:id | 更新文章 | Bearer Token |
+| DELETE | /api/posts/:id | 删除文章 | Bearer Token |
+| GET | /api/posts/category/:category | 按分类获取 | 否 |
+| GET | /api/posts/search/:keyword | 搜索文章 | 否 |
+| GET | /api/posts/meta/categories | 获取分类列表 | 否 |
+| GET | /api/posts/meta/tags | 获取标签列表 | 否 |
+| GET | /api/posts/meta/archives | 获取归档 | 否 |
+
+## 用户偏好与长期约束
+
+- 仅使用 `pnpm` 管理依赖，禁止 `npm` 或 `yarn`
+- 对外 HTTP 服务端口固定为 `5000`
+- 预览/生产服务绑定到 `0.0.0.0`，禁止绑定到 `127.0.0.1` 或 `[::1]`
+- 不使用 9000 端口
+- 管理员默认密码: `52ywq1314..`（首次部署后应立即修改）
+- 数据库文件位于 `server/data/blog.db`
+
+## 常见问题和预防
+
+1. **端口冲突**: 启动前会清理 5000 端口残留进程
+2. **环境变量**: webpack.config.js 通过 `process.env.PORT` 和 `process.env.HOST` 读取端口和主机配置
+3. **前端构建产物**: 生产构建输出到 `dist/` 目录
+4. **better-sqlite3 编译**: pnpm v10 默认忽略 build scripts，安装时需要手动运行 `npx prebuild-install` 或配置 `onlyBuiltDependencies`
+5. **JWT Secret**: 默认使用环境变量 `JWT_SECRET`，未设置时使用硬编码 fallback（生产环境务必设置）

@@ -3,6 +3,15 @@ import safeStorage from '../utils/storage';
 
 const STORAGE_KEY = 'clickSoundEnabled';
 
+function isInIframe(): boolean {
+  try {
+    return window.self !== window.top;
+  } catch {
+    // 跨域 iframe 访问 window.top 会抛 SecurityError，视为在 iframe 中
+    return true;
+  }
+}
+
 interface ClickSoundContextType {
   isEnabled: boolean;
   setEnabled: (enabled: boolean) => void;
@@ -17,6 +26,8 @@ export const useClickSoundContext = () => React.useContext(ClickSoundContext);
 
 export const ClickSoundProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isEnabled, setIsEnabledState] = useState(() => {
+    // iframe 环境中禁用声音，避免 AudioContext 和全局点击监听受限导致崩溃
+    if (isInIframe()) return false;
     return safeStorage.getItem(STORAGE_KEY) === 'true';
   });
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -47,6 +58,9 @@ export const ClickSoundProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, [isEnabled]);
 
   useEffect(() => {
+    // iframe 环境中跳过 AudioContext 创建和全局点击监听
+    if (isInIframe()) return;
+
     try {
       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
     } catch {

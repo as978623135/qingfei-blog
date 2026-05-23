@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@fortawesome/fontawesome-free':
+        specifier: ^7.2.0
+        version: 7.2.0
       framer-motion:
         specifier: ^11.16.1
         version: 11.18.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -645,6 +648,10 @@ packages:
   '@discoveryjs/json-ext@0.5.7':
     resolution: {integrity: sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==}
     engines: {node: '>=10.0.0'}
+
+  '@fortawesome/fontawesome-free@7.2.0':
+    resolution: {integrity: sha512-3DguDv/oUE+7vjMeTSOjCSG+KeawgVQOHrKRnvUuqYh1mfArrh7s+s8hXW3e4RerBA1+Wh+hBqf8sJNpqNrBWg==}
+    engines: {node: '>=6'}
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
@@ -3537,6 +3544,8 @@ snapshots:
       '@babel/helper-validator-identifier': 7.28.5
 
   '@discoveryjs/json-ext@0.5.7': {}
+
+  '@fortawesome/fontawesome-free@7.2.0': {}
 
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:
