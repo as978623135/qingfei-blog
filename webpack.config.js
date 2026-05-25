@@ -51,7 +51,8 @@ module.exports = (env, argv) => {
     plugins: [
       new HtmlWebpackPlugin({
         template: './index.html',
-        inject: 'body'
+        inject: 'body',
+        favicon: './assets/陈放.jpg'
       })
     ]
   };
