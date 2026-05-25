@@ -1,11 +1,47 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import { Copy, Check } from 'lucide-react';
 
 interface MarkdownRendererProps {
   content: string;
 }
+
+const CodeBlock: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => {
+  const [copied, setCopied] = useState(false);
+  const lang = className ? className.replace('language-', '') : 'text';
+  const codeText = typeof children === 'string' ? children : '';
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(codeText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // 复制失败静默处理
+    }
+  };
+
+  return (
+    <div className="my-4 rounded-xl overflow-hidden bg-slate-900">
+      <div className="flex items-center justify-between px-4 py-2 bg-slate-800 border-b border-slate-700">
+        <span className="text-xs text-slate-400 font-mono uppercase">{lang}</span>
+        <button
+          onClick={handleCopy}
+          className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-200 transition-colors"
+          aria-label={copied ? '已复制' : '复制代码'}
+        >
+          {copied ? <Check size={14} /> : <Copy size={14} />}
+          {copied ? '已复制' : '复制'}
+        </button>
+      </div>
+      <pre className="text-slate-100 p-4 overflow-x-auto">
+        <code className="text-sm font-mono">{children}</code>
+      </pre>
+    </div>
+  );
+};
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
   return (
@@ -31,9 +67,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
             return isInline ? (
               <code className="bg-slate-100 text-sky-600 px-1.5 py-0.5 rounded text-sm font-mono">{children}</code>
             ) : (
-              <pre className="bg-slate-900 text-slate-100 p-4 rounded-xl overflow-x-auto my-4">
-                <code className="text-sm font-mono">{children}</code>
-              </pre>
+              <CodeBlock className={className}>{children}</CodeBlock>
             );
           },
           ul: ({ children }) => <ul className="list-disc list-inside text-slate-700 mb-4 space-y-1">{children}</ul>,
