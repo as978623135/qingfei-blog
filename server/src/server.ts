@@ -6,6 +6,7 @@ import { initDb, setupTables } from './db';
 import { initAdminPassword } from './routes/auth';
 import postsRouter from './routes/posts';
 import authRouter from './routes/auth';
+import uploadRouter from './routes/upload';
 
 dotenv.config();
 
@@ -20,11 +21,16 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // API 路由
 app.use('/api/posts', postsRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/upload', uploadRouter);
 
 // 健康检查
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+// 上传文件静态托管（所有环境）
+const uploadsPath = path.resolve(__dirname, '../../public/uploads');
+app.use('/uploads', express.static(uploadsPath));
 
 // 生产环境：提供静态文件
 if (process.env.NODE_ENV === 'production') {

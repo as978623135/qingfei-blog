@@ -112,5 +112,23 @@ export const api = {
       safeStorage.setItem('admin_token', data.token);
     }
     return data;
+  },
+
+  uploadImage: async (file: File): Promise<{ url: string }> => {
+    const token = getToken();
+    const formData = new FormData();
+    formData.append('image', file);
+    const res = await fetch(`${API_BASE}/api/upload`, {
+      method: 'POST',
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      },
+      body: formData
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: '上传失败' }));
+      throw new Error(err.error || '上传失败');
+    }
+    return res.json();
   }
 };

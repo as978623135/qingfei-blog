@@ -1,8 +1,12 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-import { Bold, Italic, List, ListOrdered, Quote, Code, Link, Image, Table, Minus, Heading } from 'lucide-react';
+import {
+  Bold, Italic, List, ListOrdered, Quote, Code, Link, Image, Table, Minus, Heading,
+  Upload, Video, AudioLines, Globe, ImagePlus
+} from 'lucide-react';
+import { api } from '../services/api';
 
 interface MarkdownEditorProps {
   value: string;
@@ -12,6 +16,8 @@ interface MarkdownEditorProps {
 
 const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange, placeholder }) => {
   const [textareaRef, setTextareaRef] = useState<HTMLTextAreaElement | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const insertText = useCallback((before: string, after: string = '') => {
     if (!textareaRef) return;
@@ -31,7 +37,6 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange, placeh
     const lines = text.trim().split('\n');
     if (lines.length < 2) return null;
 
-    // 检测是否包含制表符分隔
     const hasTabs = lines.some(line => line.includes('\t'));
     if (hasTabs) {
       const rows = lines.map(line => line.split('\t').map(cell => cell.trim()));
@@ -46,15 +51,12 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange, placeh
       return mdRows.join('\n');
     }
 
-    // 检测是否为 Markdown 表格（已包含 |）
     if (lines[0].includes('|')) {
-      return null; // 已经是 Markdown 表格，不处理
+      return null;
     }
 
-    // 检测是否为多列空格/对齐格式（AI 常用格式）
     const multiSpacePattern = /^\s*(\S+.*?\s{2,}\S+.*)$/;
     if (lines.some(line => multiSpacePattern.test(line))) {
-      // 尝试用两个或更多空格作为分隔符
       const rows = lines.map(line => line.trim().split(/\s{2,}/).map(cell => cell.trim()));
       const maxCols = Math.max(...rows.map(r => r.length));
       if (maxCols >= 2) {
@@ -90,6 +92,22 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange, placeh
     }
   }, [textareaRef, value, onChange]);
 
+  // 上传图片
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const data = await api.uploadImage(file);
+      insertText(`![${file.name}](${data.url})`, '');
+    } catch (err: any) {
+      alert('上传失败：' + err.message);
+    } finally {
+      setUploading(false);
+      e.target.value = '';
+    }
+  };
+
   const toolbarItems = [
     { icon: Heading, title: '标题', action: () => insertText('## ', '') },
     { icon: Bold, title: '加粗', action: () => insertText('**', '**') },
@@ -99,14 +117,38 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange, placeh
     { icon: Quote, title: '引用', action: () => insertText('> ', '') },
     { icon: Code, title: '代码块', action: () => insertText('```\n', '\n```') },
     { icon: Link, title: '链接', action: () => insertText('[', '](url)') },
-    { icon: Image, title: '图片', action: () => insertText('![', '](url)') },
+    { icon: Image, title: '图片外链', action: () => insertText('![', '](url)') },
     { icon: Table, title: '表格', action: () => insertText('| 表头1 | 表头2 |\n|------|------|\n| 内容1 | 内容2 |', '') },
     { icon: Minus, title: '分割线', action: () => insertText('\n---\n', '') },
   ];
 
+  const mediaItems = [
+    {
+      icon: ImagePlus,
+      title: '上传图片',
+      action: () => fileInputRef.current?.click(),
+      disabled: uploading
+    },
+    {
+      icon: Video,
+      title: '插入视频',
+      action: () => insertText('<video src="视频URL" controls width="100%"></video>', '')
+    },
+    {
+      icon: AudioLines,
+      title: '插入音频',
+      action: () => insertText('<audio src="音频URL" controls></audio>', '')
+    },
+    {
+      icon: Globe,
+      title: '嵌入网页',
+      action: () => insertText('<iframe src="网页URL" frameborder="0" allowfullscreen width="100%" height="400"></iframe>', '')
+    },
+  ];
+
   return (
     <div className="border-2 border-slate-200 rounded-xl overflow-hidden bg-white">
-      <div className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-sky-50 to-sky-100 border-b border-slate-200">
+      <div className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-sky-50 to-sky-100 border-b border-slate-200 flex-wrap">
         {toolbarItems.map((item, index) => (
           <button
             key={index}
@@ -117,6 +159,25 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange, placeh
             <item.icon size={16} />
           </button>
         ))}
+        <div className="w-px h-5 bg-slate-300 mx-1" />
+        {mediaItems.map((item, index) => (
+          <button
+            key={`media-${index}`}
+            onClick={item.action}
+            title={item.title}
+            disabled={item.disabled}
+            className="p-2 rounded-lg text-slate-600 hover:bg-sky-200 hover:text-sky-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <item.icon size={16} />
+          </button>
+        ))}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/gif,image/webp"
+          onChange={handleImageUpload}
+          className="hidden"
+        />
       </div>
       <div className="grid grid-cols-2 divide-x divide-slate-200" style={{ minHeight: '400px' }}>
         <textarea

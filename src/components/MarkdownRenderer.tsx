@@ -81,6 +81,17 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
           img: ({ src, alt }) => (
             <img src={src} alt={alt} className="max-w-full rounded-xl shadow-lg my-4" />
           ),
+          video: ({ src }) => (
+            <video src={src} controls className="w-full rounded-xl my-4 shadow-lg max-h-[600px] bg-slate-900" />
+          ),
+          audio: ({ src }) => (
+            <audio src={src} controls className="w-full my-4" />
+          ),
+          iframe: ({ src }) => (
+            <div className="relative w-full aspect-video my-4 rounded-xl overflow-hidden shadow-lg bg-slate-900">
+              <iframe src={src} className="absolute inset-0 w-full h-full" frameBorder="0" allowFullScreen />
+            </div>
+          ),
           hr: () => <hr className="my-8 border-t-2 border-slate-200" />,
           table: ({ children }) => (
             <div className="overflow-x-auto my-4">
