@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Clock, Search, Folder, Tag, Archive, Home as HomeIcon, Settings, Palette, Volume2, VolumeX, Music } from 'lucide-react';
+import { Calendar, Clock, Search, Folder, Tag, Archive, Home as HomeIcon, Settings, Palette, Volume2, VolumeX, Music, Download } from 'lucide-react';
+import JSZip from 'jszip';
 import { api, Post } from '../services/api';
 import { useClickSoundContext } from '../components/ClickSoundProvider';
 import safeStorage from '../utils/storage';
@@ -242,6 +243,37 @@ const Home: React.FC = () => {
     return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
   };
 
+  const sanitizeFileName = (name: string): string => {
+    return name.replace(/[<>:"/\\|?*\x00-\x1f]/g, '_').trim() || 'untitled';
+  };
+
+  const handleExportAll = async () => {
+    try {
+      const allPosts = await api.getPosts();
+      if (!allPosts.length) {
+        alert('当前没有文章可导出');
+        return;
+      }
+      const zip = new JSZip();
+      allPosts.forEach((post) => {
+        const fileName = `${sanitizeFileName(post.title)}.md`;
+        const content = `# ${post.title}\n\n> 分类：${post.category || '未分类'}\n> 发布时间：${formatDate(post.created_at)}\n\n${post.content}`;
+        zip.file(fileName, content);
+      });
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `青飞博客文章_${new Date().toISOString().slice(0, 10)}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      alert('导出失败，请稍后重试');
+    }
+  };
+
   return (
     <div className="container pb-4">
       {/* 顶部导航 */}
@@ -267,6 +299,14 @@ const Home: React.FC = () => {
             <Settings size={16} />
             管理
           </Link>
+          <button
+            onClick={handleExportAll}
+            className="flex items-center gap-1 text-sm text-slate-600 hover:text-sky-500 transition-colors px-2 py-1 rounded-lg hover:bg-slate-100"
+            title="导出所有文章为 Markdown"
+          >
+            <Download size={16} />
+            导出
+          </button>
           <div className="w-px h-5 bg-slate-300 mx-1"></div>
           <div className="relative">
             <button
