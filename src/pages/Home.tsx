@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Clock, Search, Folder, Tag, Archive, Home as HomeIcon, Settings, Palette, Volume2, VolumeX, Music, Download, Share2, Check } from 'lucide-react';
+import { Calendar, Clock, Search, Folder, Tag, Archive, Home as HomeIcon, Palette, Volume2, VolumeX, Music, Download, Share2, Check, PenLine } from 'lucide-react';
 import JSZip from 'jszip';
 import { api, Post } from '../services/api';
 import { useClickSoundContext } from '../components/ClickSoundProvider';
 import safeStorage from '../utils/storage';
+import AdminLoginModal from '../components/AdminLoginModal';
 
 const Home: React.FC = () => {
+  const navigate = useNavigate();
   const { isEnabled, setEnabled } = useClickSoundContext();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,6 +20,7 @@ const Home: React.FC = () => {
   const [weather, setWeather] = useState({ city: '定位中...', temp: '--', condition: '☀️' });
   const [bgType, setBgType] = useState<'color' | 'image'>('color');
   const [selectedColor, setSelectedColor] = useState('#e0f2fe');
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [bgImage, setBgImage] = useState('');
   const [showBgPanel, setShowBgPanel] = useState(false);
   const [showMusicPanel, setShowMusicPanel] = useState(false);
@@ -296,10 +299,20 @@ const Home: React.FC = () => {
             <HomeIcon size={16} />
             首页
           </Link>
-          <Link to="/admin" className="flex items-center gap-1 text-sm text-slate-600 hover:text-sky-500 transition-colors px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-sky-300 hover:bg-sky-50 shadow-sm">
-            <Settings size={16} />
-            管理
-          </Link>
+          <button
+            onClick={() => {
+              const token = safeStorage.getItem('admin_token');
+              if (token) {
+                navigate('/admin/edit');
+              } else {
+                setIsLoginModalOpen(true);
+              }
+            }}
+            className="flex items-center gap-1 text-sm text-slate-600 hover:text-sky-500 transition-colors px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-sky-300 hover:bg-sky-50 shadow-sm"
+          >
+            <PenLine size={16} />
+            写文章
+          </button>
           <button
             onClick={handleExportAll}
             className="flex items-center gap-1 text-sm text-slate-600 hover:text-sky-500 transition-colors px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-sky-300 hover:bg-sky-50 shadow-sm"
@@ -664,6 +677,12 @@ const Home: React.FC = () => {
           )}
         </aside>
       </div>
+
+      {/* 登录弹窗 */}
+      <AdminLoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+      />
     </div>
   );
 };
