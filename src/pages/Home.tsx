@@ -292,17 +292,17 @@ const Home: React.FC = () => {
         </div>
         {/* 右侧导航按钮组：首页、管理、背景、音效、音乐 */}
         <div className="flex items-center gap-3">
-          <Link to="/" className="flex items-center gap-1 text-sm text-slate-600 hover:text-sky-500 transition-colors px-2 py-1 rounded-lg hover:bg-slate-100">
+          <Link to="/" className="flex items-center gap-1 text-sm text-slate-600 hover:text-sky-500 transition-colors px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-sky-300 hover:bg-sky-50 shadow-sm">
             <HomeIcon size={16} />
             首页
           </Link>
-          <Link to="/admin" className="flex items-center gap-1 text-sm text-slate-600 hover:text-sky-500 transition-colors px-2 py-1 rounded-lg hover:bg-slate-100">
+          <Link to="/admin" className="flex items-center gap-1 text-sm text-slate-600 hover:text-sky-500 transition-colors px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-sky-300 hover:bg-sky-50 shadow-sm">
             <Settings size={16} />
             管理
           </Link>
           <button
             onClick={handleExportAll}
-            className="flex items-center gap-1 text-sm text-slate-600 hover:text-sky-500 transition-colors px-2 py-1 rounded-lg hover:bg-slate-100"
+            className="flex items-center gap-1 text-sm text-slate-600 hover:text-sky-500 transition-colors px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-sky-300 hover:bg-sky-50 shadow-sm"
             title="导出所有文章为 Markdown"
           >
             <Download size={16} />
@@ -312,7 +312,7 @@ const Home: React.FC = () => {
           <div className="relative">
             <button
               onClick={() => setShowBgPanel(!showBgPanel)}
-              className="flex items-center gap-1 text-sm text-slate-600 hover:text-sky-500 transition-colors px-2 py-1 rounded-lg hover:bg-slate-100"
+              className="flex items-center gap-1 text-sm text-slate-600 hover:text-sky-500 transition-colors px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-sky-300 hover:bg-sky-50 shadow-sm"
             >
               <Palette size={16} />
               背景
@@ -370,7 +370,7 @@ const Home: React.FC = () => {
 
           <button
             onClick={() => setEnabled(!isEnabled)}
-            className="flex items-center gap-1 text-sm text-slate-600 hover:text-sky-500 transition-colors px-2 py-1 rounded-lg hover:bg-slate-100"
+            className="flex items-center gap-1 text-sm text-slate-600 hover:text-sky-500 transition-colors px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-sky-300 hover:bg-sky-50 shadow-sm"
           >
             {isEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
             音效
@@ -379,7 +379,7 @@ const Home: React.FC = () => {
           <div className="relative">
             <button
               onClick={() => setShowMusicPanel(!showMusicPanel)}
-              className="flex items-center gap-1 text-sm text-slate-600 hover:text-sky-500 transition-colors px-2 py-1 rounded-lg hover:bg-slate-100"
+              className="flex items-center gap-1 text-sm text-slate-600 hover:text-sky-500 transition-colors px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-sky-300 hover:bg-sky-50 shadow-sm"
             >
               <Music size={16} />
               音乐
