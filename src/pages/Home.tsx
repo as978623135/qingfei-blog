@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Clock, Search, Folder, Tag, Archive, Home as HomeIcon, Settings, Palette, Volume2, VolumeX, Music, Download } from 'lucide-react';
+import { Calendar, Clock, Search, Folder, Tag, Archive, Home as HomeIcon, Settings, Palette, Volume2, VolumeX, Music, Download, Share2, Check } from 'lucide-react';
 import JSZip from 'jszip';
 import { api, Post } from '../services/api';
 import { useClickSoundContext } from '../components/ClickSoundProvider';
@@ -22,6 +22,7 @@ const Home: React.FC = () => {
   const [showBgPanel, setShowBgPanel] = useState(false);
   const [showMusicPanel, setShowMusicPanel] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [copiedId, setCopiedId] = useState<number | null>(null);
   const postsPerPage = 5;
 
   // 本地音乐播放器初始化
@@ -529,6 +530,8 @@ const Home: React.FC = () => {
                       {post.title}
                     </h2>
                     <p className="text-slate-500 text-sm mb-3 line-clamp-2">{post.summary}</p>
+                  </Link>
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4 text-xs text-slate-400">
                       <span className="flex items-center gap-1">
                         <Calendar size={12} className="text-sky-500" />
@@ -540,7 +543,33 @@ const Home: React.FC = () => {
                         </span>
                       )}
                     </div>
-                  </Link>
+                    <button
+                      onClick={async () => {
+                        const shareText = `【${post.title}】 ${window.location.origin}/post/${post.id}`;
+                        try {
+                          await navigator.clipboard.writeText(shareText);
+                          setCopiedId(post.id);
+                          setTimeout(() => setCopiedId(null), 2000);
+                        } catch {
+                          alert('复制失败，请手动复制');
+                        }
+                      }}
+                      className="flex items-center gap-1 text-xs text-slate-400 hover:text-sky-500 transition-colors"
+                      title="复制标题和链接"
+                    >
+                      {copiedId === post.id ? (
+                        <>
+                          <Check size={12} className="text-green-500" />
+                          <span className="text-green-500">已复制</span>
+                        </>
+                      ) : (
+                        <>
+                          <Share2 size={12} />
+                          <span>分享</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </motion.article>
               ))}
 
