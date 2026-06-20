@@ -40,8 +40,8 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
 
 const ConditionalFooter: React.FC = () => {
   const location = useLocation();
-  const isPostDetail = location.pathname.startsWith('/post/');
-  if (isPostDetail) return null;
+  // 只在首页显示备案信息，其他页面隐藏
+  if (location.pathname !== '/') return null;
   return <Footer />;
 };
 
