@@ -114,7 +114,7 @@ const AdminEdit: React.FC = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-2xl shadow-lg border border-blue-100 p-8 max-w-5xl mx-auto"
+        className="bg-white rounded-2xl shadow-lg border border-blue-100 p-8 max-w-screen-2xl mx-auto"
       >
         <div className="flex items-center justify-between mb-8 pb-4 border-b border-blue-100">
           <div className="flex items-center gap-3">
