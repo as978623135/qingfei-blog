@@ -58,11 +58,11 @@ const PostDetail: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="mb-6 flex justify-between items-center">
+        <div className="mb-6 flex justify-end items-center gap-3">
           {isLoggedIn && (
             <button
               onClick={() => navigate(`/admin/edit?id=${id}`)}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-sky-200 bg-white text-sky-600 hover:bg-sky-50 transition-colors text-sm"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-600 hover:bg-sky-50 transition-colors shadow-sm text-sm"
             >
               <PenLine size={16} />
               编辑文章
@@ -70,7 +70,7 @@ const PostDetail: React.FC = () => {
           )}
           <Link
             to="/"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-sky-200 bg-white text-sky-600 hover:bg-sky-50 transition-colors text-sm ml-auto"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-600 hover:bg-sky-50 transition-colors shadow-sm text-sm"
           >
             <ArrowLeft size={16} />
             返回首页
@@ -99,7 +99,7 @@ const PostDetail: React.FC = () => {
           <MarkdownRenderer content={post.content} />
         </div>
 
-        <div className="flex gap-3 mt-8">
+        <div className="flex justify-center items-center gap-3 mt-8">
           <button
             onClick={() => {
               if (post) {
@@ -109,20 +109,20 @@ const PostDetail: React.FC = () => {
                 });
               }
             }}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-sky-50 text-sky-600 hover:bg-sky-100 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-600 hover:bg-sky-50 transition-colors shadow-sm text-sm"
           >
-            <Share2 size={18} />
+            <Share2 size={16} />
             分享
           </button>
           <button
             onClick={() => setLiked(!liked)}
-            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg transition-colors ${
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors shadow-sm text-sm ${
               liked
-                ? 'bg-red-50 text-red-600 border border-red-200'
-                : 'bg-sky-50 text-sky-600 hover:bg-sky-100'
+                ? 'border-red-200 bg-white text-red-600 hover:bg-red-50'
+                : 'border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-600 hover:bg-sky-50'
             }`}
           >
-            <ThumbsUp size={18} />
+            <ThumbsUp size={16} />
             {liked ? '已点赞' : '点赞'}
           </button>
         </div>
