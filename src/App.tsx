@@ -1,5 +1,5 @@
 import React, { Component, ReactNode } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Footer from './components/Footer';
 import SeasonalEffect from './components/SeasonalEffect';
 import { ClickSoundProvider } from './components/ClickSoundProvider';
@@ -38,6 +38,13 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
   }
 }
 
+const ConditionalFooter: React.FC = () => {
+  const location = useLocation();
+  const isPostDetail = location.pathname.startsWith('/post/');
+  if (isPostDetail) return null;
+  return <Footer />;
+};
+
 const App: React.FC = () => {
   return (
     <ErrorBoundary>
@@ -54,7 +61,7 @@ const App: React.FC = () => {
               <Route path="/admin/edit/:id" element={<AdminEdit />} />
             </Routes>
           </main>
-          <Footer />
+          <ConditionalFooter />
           <ScrollToButtons />
         </div>
       </ClickSoundProvider>

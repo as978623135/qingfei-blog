@@ -61,7 +61,7 @@ const PostDetail: React.FC = () => {
         <div className="mb-6 flex justify-end items-center gap-3">
           {isLoggedIn && (
             <button
-              onClick={() => navigate(`/admin/edit?id=${id}`)}
+              onClick={() => navigate(`/admin/edit/${id}`)}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-600 hover:bg-sky-50 transition-colors shadow-sm text-sm"
             >
               <PenLine size={16} />
