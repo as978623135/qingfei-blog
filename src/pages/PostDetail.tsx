@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Calendar, Edit } from 'lucide-react';
+import { ArrowLeft, Calendar, Edit, Share2, ThumbsUp, PenLine } from 'lucide-react';
 import { api, Post } from '../services/api';
+import safeStorage from '../utils/storage';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 
 const PostDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [liked, setLiked] = useState(false);
 
   useEffect(() => {
+    setIsLoggedIn(!!safeStorage.getItem('admin_token'));
     if (id) {
       loadPost(id);
     }
@@ -53,10 +58,19 @@ const PostDetail: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="mb-6">
+        <div className="mb-6 flex justify-between items-center">
+          {isLoggedIn && (
+            <button
+              onClick={() => navigate(`/admin/edit?id=${id}`)}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-sky-200 bg-white text-sky-600 hover:bg-sky-50 transition-colors text-sm"
+            >
+              <PenLine size={16} />
+              编辑文章
+            </button>
+          )}
           <Link
             to="/"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-sky-200 bg-white text-sky-600 hover:bg-sky-50 transition-colors text-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-sky-200 bg-white text-sky-600 hover:bg-sky-50 transition-colors text-sm ml-auto"
           >
             <ArrowLeft size={16} />
             返回首页
@@ -85,13 +99,33 @@ const PostDetail: React.FC = () => {
           <MarkdownRenderer content={post.content} />
         </div>
 
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 mt-8 px-5 py-2.5 rounded-lg bg-sky-50 text-sky-600 hover:bg-sky-100 transition-colors"
-        >
-          <ArrowLeft size={18} />
-          返回首页
-        </Link>
+        <div className="flex gap-3 mt-8">
+          <button
+            onClick={() => {
+              if (post) {
+                const text = `【${post.title}】 https://qingfei.online/post/${post.id}`;
+                navigator.clipboard.writeText(text).then(() => {
+                  alert('已复制到剪贴板');
+                });
+              }
+            }}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-sky-50 text-sky-600 hover:bg-sky-100 transition-colors"
+          >
+            <Share2 size={18} />
+            分享
+          </button>
+          <button
+            onClick={() => setLiked(!liked)}
+            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg transition-colors ${
+              liked
+                ? 'bg-red-50 text-red-600 border border-red-200'
+                : 'bg-sky-50 text-sky-600 hover:bg-sky-100'
+            }`}
+          >
+            <ThumbsUp size={18} />
+            {liked ? '已点赞' : '点赞'}
+          </button>
+        </div>
       </motion.article>
     </div>
   );
