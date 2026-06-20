@@ -279,7 +279,7 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="container pb-4">
+    <div className="container max-w-screen-2xl pb-4">
       {/* 顶部导航 */}
       <div className="flex justify-between items-center mb-4" style={{ marginTop: '25px' }}>
         {/* 左侧：日期和天气 */}
@@ -488,7 +488,7 @@ const Home: React.FC = () => {
       </motion.div>
 
       {/* 三栏布局 */}
-      <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* 左侧边栏 - 文章分类 */}
         <aside className="lg:col-span-2">
           <div className="bg-white/90 rounded-xl shadow-sm border border-sky-100 p-4 sticky top-24">
@@ -519,7 +519,7 @@ const Home: React.FC = () => {
         </aside>
 
         {/* 中间主内容区 */}
-        <main className="lg:col-span-6">
+        <main className="lg:col-span-8">
           {loading ? (
             <div className="text-center py-20 text-slate-400">加载中...</div>
           ) : filteredPosts.length === 0 ? (
