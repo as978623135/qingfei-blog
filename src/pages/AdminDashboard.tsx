@@ -41,7 +41,7 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <div className="container py-8">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-screen-2xl mx-auto">
         <div className="flex justify-between items-center mb-8 pb-6 border-b border-sky-100">
         <h1 className="text-2xl font-semibold text-slate-900 flex items-center gap-3">
           <span className="text-sky-500">⚙️</span> 文章管理
