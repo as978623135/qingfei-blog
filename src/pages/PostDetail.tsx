@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Calendar, Edit, Share2, ThumbsUp, PenLine, Download } from 'lucide-react';
+import { ArrowLeft, Calendar, Edit, Share2, ThumbsUp, PenLine, Download, Plus } from 'lucide-react';
 import { api, Post } from '../services/api';
 import safeStorage from '../utils/storage';
 import MarkdownRenderer from '../components/MarkdownRenderer';
@@ -60,13 +60,22 @@ const PostDetail: React.FC = () => {
       >
         <div className="mb-6 flex justify-end items-center gap-3">
           {isLoggedIn && (
-            <button
-              onClick={() => navigate(`/admin/edit/${id}`)}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-600 hover:bg-sky-50 transition-colors shadow-sm text-sm"
-            >
-              <PenLine size={16} />
-              编辑文章
-            </button>
+            <>
+              <button
+                onClick={() => navigate('/admin/edit')}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-600 hover:bg-sky-50 transition-colors shadow-sm text-sm"
+              >
+                <Plus size={16} />
+                新建文章
+              </button>
+              <button
+                onClick={() => navigate(`/admin/edit/${id}`)}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-600 hover:bg-sky-50 transition-colors shadow-sm text-sm"
+              >
+                <PenLine size={16} />
+                编辑文章
+              </button>
+            </>
           )}
           <button
             onClick={() => {
