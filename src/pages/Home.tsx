@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Clock, Search, Folder, Archive, Home as HomeIcon, Palette, Volume2, VolumeX, Music, Download, Share2, Check, PenLine } from 'lucide-react';
+import { Calendar, Clock, Search, Folder, Archive, Home as HomeIcon, Palette, Volume2, VolumeX, Download, Share2, Check, PenLine } from 'lucide-react';
 import JSZip from 'jszip';
 import { api, Post } from '../services/api';
 import { useClickSoundContext } from '../components/ClickSoundProvider';
@@ -23,105 +23,12 @@ const Home: React.FC = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [bgImage, setBgImage] = useState('');
   const [showBgPanel, setShowBgPanel] = useState(false);
-  const [showMusicPanel, setShowMusicPanel] = useState(false);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [copiedId, setCopiedId] = useState<number | null>(null);
   const [pageTip, setPageTip] = useState('');
   const lastWheelTime = useRef(0);
   const postsPerPage = 5;
-
-  // 本地音乐播放器初始化
-  useEffect(() => {
-    const audio = document.getElementById('local-music-audio') as HTMLAudioElement;
-    const playBtn = document.getElementById('local-music-play');
-    const pauseBtn = document.getElementById('local-music-pause');
-    const vinylDisc = document.getElementById('vinyl-disc');
-    const progressBar = document.getElementById('progress-bar');
-    const progressContainer = document.getElementById('progress-container');
-    const progressThumb = document.getElementById('progress-thumb');
-    const currentTimeEl = document.getElementById('current-time');
-    const totalTimeEl = document.getElementById('total-time');
-    const vinylContainer = document.getElementById('vinyl-container');
-    let isDragging = false;
-    let rotation = 0;
-    let animationId: number | null = null;
-
-    const formatTime = (seconds: number) => {
-      const mins = Math.floor(seconds / 60);
-      const secs = Math.floor(seconds % 60);
-      return `${mins}:${secs.toString().padStart(2, '0')}`;
-    };
-
-    const rotateVinyl = () => {
-      if (vinylDisc && !audio.paused) {
-        rotation += 1;
-        vinylDisc.style.transform = `rotate(${rotation}deg)`;
-        animationId = requestAnimationFrame(rotateVinyl);
-      }
-    };
-
-    const stopRotation = () => {
-      if (animationId) {
-        cancelAnimationFrame(animationId);
-        animationId = null;
-      }
-    };
-
-    if (audio) {
-      // 加载元数据时更新总时长
-      audio.onloadedmetadata = () => {
-        if (totalTimeEl) totalTimeEl.textContent = formatTime(audio.duration || 0);
-      };
-
-      // 播放时开始旋转
-      audio.onplay = () => {
-        if (!animationId) rotateVinyl();
-      };
-
-      // 暂停时停止旋转
-      audio.onpause = () => {
-        stopRotation();
-      };
-
-      // 更新进度条
-      audio.ontimeupdate = () => {
-        if (!isDragging && progressBar && progressThumb && currentTimeEl) {
-          const percent = (audio.currentTime / (audio.duration || 1)) * 100;
-          progressBar.style.width = `${percent}%`;
-          progressThumb.style.left = `${percent}%`;
-          currentTimeEl.textContent = formatTime(audio.currentTime);
-        }
-      };
-
-      // 进度条点击跳转
-      if (progressContainer) {
-        progressContainer.onclick = (e) => {
-          const rect = progressContainer.getBoundingClientRect();
-          const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-          if (progressBar && progressThumb) {
-            progressBar.style.width = `${percent * 100}%`;
-            progressThumb.style.left = `${percent * 100}%`;
-          }
-          audio.currentTime = percent * (audio.duration || 0);
-        };
-      }
-    }
-
-    if (playBtn) {
-      playBtn.onclick = () => {
-        audio?.play();
-      };
-    }
-    if (pauseBtn) {
-      pauseBtn.onclick = () => {
-        audio?.pause();
-      };
-    }
-
-    return () => {
-      stopRotation();
-    };
-  }, [showMusicPanel]);
 
   const colors = [
     '#e0f2fe', '#f0f9ff', '#ffffff', '#fef3c7', '#fce7f3',
@@ -400,76 +307,7 @@ const Home: React.FC = () => {
             音效
           </button>
 
-          <div className="relative">
-            <button
-              onClick={() => setShowMusicPanel(!showMusicPanel)}
-              className="flex items-center gap-1 text-sm text-slate-600 hover:text-sky-500 transition-colors px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-sky-300 hover:bg-sky-50 shadow-sm"
-            >
-              <Music size={16} />
-              音乐
-            </button>
-            <AnimatePresence>
-              {showMusicPanel && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="absolute right-0 top-full mt-2 w-80 bg-white/95 rounded-xl shadow-lg border border-sky-100 p-4 z-50"
-                >
-                  <div className="flex justify-between items-center mb-3">
-                    <h3 className="text-sm font-semibold text-slate-700">音乐播放器</h3>
-                    <button onClick={() => setShowMusicPanel(false)} className="text-slate-400 hover:text-slate-600">×</button>
-                  </div>
-                  {/* 本地音乐播放器 */}
-                  <div className="bg-slate-50 rounded-lg p-3">
-                    <div className="text-xs text-slate-800 mb-2 truncate font-medium" id="local-music-title">冰牙的白虎_白虎龍神丸</div>
-                    <div className="flex items-center gap-3">
-                      {/* 唱片图标 - 黑红配色精致设计 */}
-                      <div id="vinyl-container" className="w-[60px] h-[60px] flex-shrink-0">
-                        <div id="vinyl-disc" className="w-full h-full rounded-full bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center relative overflow-hidden border-2 border-red-600 shadow-lg shadow-red-900/20">
-                          {/* 唱片纹路 - 精细同心圆 */}
-                          <div className="absolute inset-0 rounded-full" style={{background: 'repeating-radial-gradient(circle at center, transparent 0px, transparent 2px, rgba(220,38,38,0.15) 2px, rgba(220,38,38,0.15) 3px)'}}></div>
-                          {/* 高光效果 */}
-                          <div className="absolute inset-2 rounded-full bg-gradient-to-br from-gray-700/50 via-transparent to-transparent"></div>
-                          {/* 外圈红色装饰环 */}
-                          <div className="absolute inset-3 rounded-full border border-red-500/40"></div>
-                          <div className="absolute inset-5 rounded-full border border-red-500/30"></div>
-                          {/* 中心标签 - 红色主题 */}
-                          <div className="absolute inset-8 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center shadow-inner">
-                            <div className="w-3 h-3 rounded-full bg-black border border-red-400"></div>
-                          </div>
-                          {/* 反光效果 */}
-                          <div className="absolute top-2 left-3 w-3 h-3 rounded-full bg-white/20 blur-sm"></div>
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-2 flex-1">
-                        {/* 进度条 - 粗条带进度钮 */}
-                        <div className="flex items-center gap-2 group">
-                          <span id="current-time" className="text-xs text-slate-500 w-8 text-right tabular-nums font-medium">0:00</span>
-                          <div className="flex-1 relative h-3 bg-gray-200 rounded-full cursor-pointer" id="progress-container">
-                            {/* 进度填充 */}
-                            <div id="progress-bar" className="absolute left-0 top-0 h-full bg-gradient-to-r from-red-500 to-red-600 rounded-full" style={{width: '0%'}}></div>
-                            {/* 进度钮 */}
-                            <div id="progress-thumb" className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-md border-2 border-red-500 opacity-0 group-hover:opacity-100 transition-opacity" style={{left: '0%'}}></div>
-                          </div>
-                          <span id="total-time" className="text-xs text-slate-500 w-8 tabular-nums font-medium">0:00</span>
-                        </div>
-                        {/* 播放控制按钮 */}
-                        <div className="flex gap-2">
-                          <button id="local-music-play" className="flex-1 px-3 py-1.5 bg-sky-500 text-white text-xs rounded-lg hover:bg-sky-600 transition-colors">播放</button>
-                          <button id="local-music-pause" className="flex-1 px-3 py-1.5 bg-slate-400 text-white text-xs rounded-lg hover:bg-slate-500 transition-colors">暂停</button>
-                        </div>
-                      </div>
-                    </div>
-                    <audio id="local-music-audio" className="hidden">
-                      <source src="https://hwndaght0uij.meoo.pub/api/storage/v1/object/public/audio/冰牙的白虎_白虎龍神丸.mp3" type="audio/mpeg" />
-                    </audio>
-                  </div>
-                  <p className="text-xs text-slate-400 mt-2">自动加载服务器本地音频文件</p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+
         </div>
       </div>
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Calendar, Edit, Share2, ThumbsUp, PenLine } from 'lucide-react';
+import { ArrowLeft, Calendar, Edit, Share2, ThumbsUp, PenLine, Download } from 'lucide-react';
 import { api, Post } from '../services/api';
 import safeStorage from '../utils/storage';
 import MarkdownRenderer from '../components/MarkdownRenderer';
@@ -68,6 +68,25 @@ const PostDetail: React.FC = () => {
               编辑文章
             </button>
           )}
+          <button
+            onClick={() => {
+              if (!post) return;
+              const blob = new Blob(
+                [`# ${post.title}\n\n> 发布于 ${formatDate(post.created_at)}\n\n${post.content}`],
+                { type: 'text/markdown' }
+              );
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `${post.title}.md`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-600 hover:bg-sky-50 transition-colors shadow-sm text-sm"
+          >
+            <Download size={16} />
+            导出 Markdown
+          </button>
           <Link
             to="/"
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-600 hover:bg-sky-50 transition-colors shadow-sm text-sm"
