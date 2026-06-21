@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Clock, Search, Folder, Tag, Archive, Home as HomeIcon, Palette, Volume2, VolumeX, Music, Download, Share2, Check, PenLine } from 'lucide-react';
@@ -26,6 +26,8 @@ const Home: React.FC = () => {
   const [showMusicPanel, setShowMusicPanel] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [copiedId, setCopiedId] = useState<number | null>(null);
+  const [pageTip, setPageTip] = useState('');
+  const lastWheelTime = useRef(0);
   const postsPerPage = 5;
 
   // 本地音乐播放器初始化
@@ -240,6 +242,15 @@ const Home: React.FC = () => {
     const start = (currentPage - 1) * postsPerPage;
     return filteredPosts.slice(start, start + postsPerPage);
   }, [filteredPosts, currentPage]);
+
+  // 翻页时显示页码提示
+  useEffect(() => {
+    if (totalPages > 1) {
+      setPageTip(`第 ${currentPage} / ${totalPages} 页`);
+      const timer = setTimeout(() => setPageTip(''), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [currentPage, totalPages]);
 
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return '-';
@@ -491,7 +502,7 @@ const Home: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* 左侧边栏 - 文章分类 */}
         <aside className="lg:col-span-2">
-          <div className="bg-white/90 rounded-xl shadow-sm border border-sky-100 p-4 sticky top-24">
+          <div className="bg-white/90 rounded-xl shadow-sm border border-sky-100 p-4 sticky top-24 max-h-[500px] overflow-y-auto">
             <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-4">
               <Folder size={16} className="text-sky-500" />
               文章分类
@@ -519,7 +530,23 @@ const Home: React.FC = () => {
         </aside>
 
         {/* 中间主内容区 */}
-        <main className="lg:col-span-8">
+        <main
+          className="lg:col-span-8"
+          onWheel={(e) => {
+            if (totalPages <= 1) return;
+            const now = Date.now();
+            if (now - lastWheelTime.current < 800) return;
+            if (e.deltaY > 0 && currentPage < totalPages) {
+              lastWheelTime.current = now;
+              setCurrentPage(p => Math.min(totalPages, p + 1));
+              e.preventDefault();
+            } else if (e.deltaY < 0 && currentPage > 1) {
+              lastWheelTime.current = now;
+              setCurrentPage(p => Math.max(1, p - 1));
+              e.preventDefault();
+            }
+          }}
+        >
           {loading ? (
             <div className="text-center py-20 text-slate-400">加载中...</div>
           ) : filteredPosts.length === 0 ? (
@@ -627,7 +654,7 @@ const Home: React.FC = () => {
 
         {/* 右侧边栏 - 时间归档 */}
         <aside className="lg:col-span-2">
-          <div className="bg-white/90 rounded-xl shadow-sm border border-sky-100 p-4 sticky top-24">
+          <div className="bg-white/90 rounded-xl shadow-sm border border-sky-100 p-4 sticky top-24 max-h-[500px] overflow-y-auto">
             <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-4">
               <Archive size={16} className="text-sky-500" />
               时间归档
@@ -653,7 +680,7 @@ const Home: React.FC = () => {
 
           {/* 标签云 */}
           {tags.length > 0 && (
-            <div className="bg-white/90 rounded-xl shadow-sm border border-sky-100 p-4 mt-6">
+            <div className="bg-white/90 rounded-xl shadow-sm border border-sky-100 p-4 mt-6 max-h-[300px] overflow-y-auto">
               <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-4">
                 <Tag size={16} className="text-sky-500" />
                 标签云
@@ -677,6 +704,13 @@ const Home: React.FC = () => {
           )}
         </aside>
       </div>
+
+      {/* 翻页提示 */}
+      {pageTip && (
+        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-slate-800/80 text-white px-6 py-3 rounded-xl text-lg font-medium backdrop-blur-sm pointer-events-none">
+          {pageTip}
+        </div>
+      )}
 
       {/* 登录弹窗 */}
       <AdminLoginModal
