@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Clock, Search, Folder, Tag, Archive, Home as HomeIcon, Palette, Volume2, VolumeX, Music, Download, Share2, Check, PenLine } from 'lucide-react';
+import { Calendar, Clock, Search, Folder, Archive, Home as HomeIcon, Palette, Volume2, VolumeX, Music, Download, Share2, Check, PenLine } from 'lucide-react';
 import JSZip from 'jszip';
 import { api, Post } from '../services/api';
 import { useClickSoundContext } from '../components/ClickSoundProvider';
@@ -502,7 +502,7 @@ const Home: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* 左侧边栏 - 文章分类 */}
         <aside className="lg:col-span-2">
-          <div className="bg-white/90 rounded-xl shadow-sm border border-sky-100 p-4 sticky top-24 max-h-[500px] overflow-y-auto">
+          <div className="bg-white/90 rounded-xl shadow-sm border border-sky-100 p-4 overflow-y-auto">
             <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-4">
               <Folder size={16} className="text-sky-500" />
               文章分类
@@ -654,7 +654,7 @@ const Home: React.FC = () => {
 
         {/* 右侧边栏 - 时间归档 */}
         <aside className="lg:col-span-2">
-          <div className="bg-white/90 rounded-xl shadow-sm border border-sky-100 p-4 sticky top-24 max-h-[500px] overflow-y-auto">
+          <div className="bg-white/90 rounded-xl shadow-sm border border-sky-100 p-4 overflow-y-auto">
             <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-4">
               <Archive size={16} className="text-sky-500" />
               时间归档
@@ -678,30 +678,7 @@ const Home: React.FC = () => {
             </ul>
           </div>
 
-          {/* 标签云 */}
-          {tags.length > 0 && (
-            <div className="bg-white/90 rounded-xl shadow-sm border border-sky-100 p-4 mt-6 max-h-[300px] overflow-y-auto">
-              <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-4">
-                <Tag size={16} className="text-sky-500" />
-                标签云
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {tags.map(tag => (
-                  <button
-                    key={tag}
-                    onClick={() => { setSelectedTag(selectedTag === tag ? '' : tag); setSelectedYear(''); }}
-                    className={`px-2.5 py-1 rounded-full text-xs transition-colors ${
-                      selectedTag === tag
-                        ? 'bg-sky-500 text-white'
-                        : 'bg-slate-100 text-slate-600 hover:bg-sky-100'
-                    }`}
-                  >
-                    {tag}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+
         </aside>
       </div>
 
