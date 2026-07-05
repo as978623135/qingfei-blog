@@ -131,7 +131,7 @@ const PostDetail: React.FC = () => {
           <button
             onClick={() => {
               if (post) {
-                const text = `【${post.title}】 https://qingfei.online/post/${post.id}`;
+                const text = `【${post.title}】 https://qingfei.online/#/post/${post.id}`;
                 navigator.clipboard.writeText(text).then(() => {
                   alert('已复制到剪贴板');
                 });

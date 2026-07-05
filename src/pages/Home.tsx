@@ -423,7 +423,7 @@ const Home: React.FC = () => {
                     </div>
                     <button
                       onClick={async () => {
-                        const shareText = `【${post.title}】 ${window.location.origin}/post/${post.id}`;
+                        const shareText = `【${post.title}】 ${window.location.origin}/#/post/${post.id}`;
                         try {
                           await navigator.clipboard.writeText(shareText);
                           setCopiedId(post.id);
