@@ -7,9 +7,10 @@ import { api } from '../services/api';
 interface AdminLoginModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
-const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClose }) => {
+const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,6 +24,7 @@ const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClose }) =>
       const res = await api.login(password);
       if (res.success) {
         onClose();
+        onSuccess?.();
         navigate('/admin/edit');
       } else {
         setError('密码错误');

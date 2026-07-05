@@ -8,7 +8,7 @@ export interface AuthRequest extends Request {
 }
 
 export function generateToken(): string {
-  return jwt.sign({ role: 'admin' }, JWT_SECRET, { expiresIn: '7d' });
+  return jwt.sign({ role: 'admin' }, JWT_SECRET, { expiresIn: '30d' });
 }
 
 export function verifyToken(token: string): boolean {

@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Save, X, Feather, Upload, Plus, Tag } from 'lucide-react';
 import { api, Post } from '../services/api';
 import MarkdownEditor from '../components/MarkdownEditor';
+import AdminLoginModal from '../components/AdminLoginModal';
 
 const AdminEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -18,6 +19,8 @@ const AdminEdit: React.FC = () => {
   });
   const [loading, setLoading] = useState(isEdit);
   const [categories, setCategories] = useState<string[]>([]);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const pendingSave = useRef(false);
   const [showNewCategory, setShowNewCategory] = useState(false);
   const [newCategory, setNewCategory] = useState('');
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -89,8 +92,8 @@ const AdminEdit: React.FC = () => {
     e.target.value = '';
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     try {
       if (isEdit && id) {
         await api.updatePost(id, formData);
@@ -99,9 +102,16 @@ const AdminEdit: React.FC = () => {
         await api.createPost(formData);
         alert('文章发布成功');
       }
+      pendingSave.current = false;
       navigate('/admin/dashboard');
     } catch (err: any) {
-      alert(err.message || '操作失败');
+      const msg = err.message || '操作失败';
+      if (msg.includes('token') || msg.includes('未授权') || msg.includes('401')) {
+        pendingSave.current = true;
+        setShowLoginModal(true);
+      } else {
+        alert(msg);
+      }
     }
   };
 
@@ -269,6 +279,19 @@ const AdminEdit: React.FC = () => {
           </div>
         </form>
       </motion.div>
+
+      <AdminLoginModal
+        isOpen={showLoginModal}
+        onClose={() => {
+          setShowLoginModal(false);
+          pendingSave.current = false;
+        }}
+        onSuccess={() => {
+          if (pendingSave.current) {
+            handleSubmit();
+          }
+        }}
+      />
     </div>
   );
 };
