@@ -89,7 +89,14 @@ const AdminDashboard: React.FC = () => {
                   animate={{ opacity: 1 }}
                   className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
                 >
-                  <td className="px-6 py-4 font-medium text-slate-900">{post.title}</td>
+                  <td className="px-6 py-4 font-medium text-slate-900">
+                    <Link
+                      to={`/post/${post.id}`}
+                      className="hover:text-sky-500 transition-colors"
+                    >
+                      {post.title}
+                    </Link>
+                  </td>
                   <td className="px-6 py-4">
                     <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-sky-50 text-sky-600">
                       {post.category || '未分类'}
