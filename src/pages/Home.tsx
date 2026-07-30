@@ -513,7 +513,7 @@ const Home: React.FC = () => {
 
         {/* 右侧边栏 - 时间归档 */}
         <aside className="lg:col-span-2">
-          <div className="bg-white/90 rounded-xl shadow-sm border border-sky-100 p-4 overflow-y-auto">
+          <div className="bg-white/90 rounded-xl shadow-sm border border-sky-100 p-4 overflow-y-auto max-h-[850px]">
             <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-4">
               <Archive size={16} className="text-sky-500" />
               时间归档
