@@ -366,14 +366,16 @@ const Home: React.FC = () => {
             <option value="title">标题</option>
             <option value="content">内容</option>
           </select>
-          <Search className="absolute left-24 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="搜索文章..."
-            className="flex-1 pl-10 pr-4 py-2.5 focus:outline-none"
-          />
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="搜索文章..."
+              className="w-full pl-10 pr-4 py-2.5 focus:outline-none"
+            />
+          </div>
         </div>
       </motion.div>
 
