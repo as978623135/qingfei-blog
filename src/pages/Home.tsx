@@ -18,6 +18,7 @@ const Home: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('全部');
   const [selectedTag, setSelectedTag] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
+  const [dateRange, setDateRange] = useState({ start: '', end: '' });
   const [weather, setWeather] = useState({ city: '定位中...', temp: '--', condition: '☀️' });
   const [bgType, setBgType] = useState<'color' | 'image'>('color');
   const [selectedColor, setSelectedColor] = useState('#e0f2fe');
@@ -148,14 +149,20 @@ const Home: React.FC = () => {
       const matchCategory = selectedCategory === '全部' || (post.category || '未分类') === selectedCategory;
       const matchTag = !selectedTag || post.tags?.includes(selectedTag);
       const matchYear = !selectedYear || (post.created_at && formatDate(post.created_at) === selectedYear);
-      return matchSearch && matchCategory && matchTag && matchYear;
+      let matchDateRange = true;
+      if (dateRange.start || dateRange.end) {
+        const postDate = post.created_at ? new Date(post.created_at).toISOString().slice(0, 10) : '';
+        if (dateRange.start && postDate < dateRange.start) matchDateRange = false;
+        if (dateRange.end && postDate > dateRange.end) matchDateRange = false;
+      }
+      return matchSearch && matchCategory && matchTag && matchYear && matchDateRange;
     });
-  }, [posts, searchQuery, searchType, selectedCategory, selectedTag, selectedYear]);
+  }, [posts, searchQuery, searchType, selectedCategory, selectedTag, selectedYear, dateRange]);
 
   // 当筛选条件变化时重置到第1页
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, searchType, selectedCategory, selectedTag, selectedYear]);
+  }, [searchQuery, searchType, selectedCategory, selectedTag, selectedYear, dateRange]);
 
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
   const paginatedPosts = useMemo(() => {
@@ -559,15 +566,49 @@ const Home: React.FC = () => {
         {/* 右侧边栏 - 时间归档 */}
         <aside className="lg:col-span-2">
           <div className="bg-white/90 rounded-xl shadow-sm border border-sky-100 p-4 overflow-y-auto max-h-[850px]">
-            <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-4">
+            <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-3">
               <Archive size={16} className="text-sky-500" />
               时间归档
             </h3>
+
+            {/* 日期范围选择 */}
+            <div className="mb-3 space-y-2">
+              <div className="flex gap-1">
+                <input
+                  type="date"
+                  value={dateRange.start}
+                  onChange={(e) => { setDateRange(prev => ({ ...prev, start: e.target.value })); setSelectedYear(''); }}
+                  className="flex-1 min-w-0 text-xs px-2 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-sky-400 bg-white"
+                  title="开始日期"
+                />
+                <input
+                  type="date"
+                  value={dateRange.end}
+                  onChange={(e) => { setDateRange(prev => ({ ...prev, end: e.target.value })); setSelectedYear(''); }}
+                  className="flex-1 min-w-0 text-xs px-2 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-sky-400 bg-white"
+                  title="结束日期"
+                />
+              </div>
+              {(dateRange.start || dateRange.end) && (
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-sky-600">
+                    {dateRange.start || '...'} ~ {dateRange.end || '...'}
+                  </span>
+                  <button
+                    onClick={() => setDateRange({ start: '', end: '' })}
+                    className="text-slate-400 hover:text-red-500 transition-colors"
+                  >
+                    清除
+                  </button>
+                </div>
+              )}
+            </div>
+
             <ul className="space-y-1">
               {archives.map(([date, count]) => (
                 <li key={date}>
                   <button
-                    onClick={() => { setSelectedYear(selectedYear === date ? '' : date); setSelectedTag(''); }}
+                    onClick={() => { setSelectedYear(selectedYear === date ? '' : date); setSelectedTag(''); setDateRange({ start: '', end: '' }); }}
                     className={`w-full flex justify-between items-center px-3 py-2 rounded-lg text-sm transition-colors ${
                       selectedYear === date
                         ? 'bg-sky-500 text-white'
