@@ -21,6 +21,7 @@ const Home: React.FC = () => {
   const [bgType, setBgType] = useState<'color' | 'image'>('color');
   const [selectedColor, setSelectedColor] = useState('#e0f2fe');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => !!safeStorage.getItem('admin_token'));
   const [bgImage, setBgImage] = useState('');
   const [showBgPanel, setShowBgPanel] = useState(false);
 
@@ -219,8 +220,7 @@ const Home: React.FC = () => {
           </Link>
           <button
             onClick={() => {
-              const token = safeStorage.getItem('admin_token');
-              if (token) {
+              if (isLoggedIn) {
                 navigate('/admin/edit');
               } else {
                 setIsLoginModalOpen(true);
@@ -307,7 +307,28 @@ const Home: React.FC = () => {
             音效
           </button>
 
-
+          <div className="w-px h-5 bg-slate-300 mx-1"></div>
+          <button
+            onClick={() => {
+              if (isLoggedIn) {
+                safeStorage.removeItem('admin_token');
+                setIsLoggedIn(false);
+                alert('已退出登录');
+              } else {
+                setIsLoginModalOpen(true);
+              }
+            }}
+            className="flex items-center gap-1 text-sm text-slate-600 hover:text-sky-500 transition-colors px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-sky-300 hover:bg-sky-50 shadow-sm"
+          >
+            {isLoggedIn ? (
+              <>
+                <Check size={16} className="text-green-500" />
+                已登录
+              </>
+            ) : (
+              '登录'
+            )}
+          </button>
         </div>
       </div>
 
@@ -531,6 +552,8 @@ const Home: React.FC = () => {
       <AdminLoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
+        onSuccess={() => setIsLoggedIn(true)}
+        redirectToEdit={false}
       />
     </div>
   );

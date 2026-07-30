@@ -8,9 +8,10 @@ interface AdminLoginModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: () => void;
+  redirectToEdit?: boolean;
 }
 
-const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClose, onSuccess }) => {
+const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClose, onSuccess, redirectToEdit = true }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,7 +26,9 @@ const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClose, onSu
       if (res.success) {
         onClose();
         onSuccess?.();
-        navigate('/admin/edit');
+        if (redirectToEdit) {
+          navigate('/admin/edit');
+        }
       } else {
         setError('密码错误');
       }
