@@ -361,7 +361,7 @@ const Home: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* 左侧边栏 - 文章分类 */}
         <aside className="lg:col-span-2">
-          <div className="bg-white/90 rounded-xl shadow-sm border border-sky-100 p-4 overflow-y-auto">
+          <div className="bg-white/90 rounded-xl shadow-sm border border-sky-100 p-4 overflow-y-auto max-h-[850px]">
             <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-4">
               <Folder size={16} className="text-sky-500" />
               文章分类
