@@ -23,6 +23,7 @@ const Home: React.FC = () => {
   const [selectedColor, setSelectedColor] = useState('#e0f2fe');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(() => !!safeStorage.getItem('admin_token'));
+  const [pendingRedirect, setPendingRedirect] = useState<string | null>(null);
   const [bgImage, setBgImage] = useState('');
   const [showBgPanel, setShowBgPanel] = useState(false);
 
@@ -171,6 +172,14 @@ const Home: React.FC = () => {
     }
   }, [currentPage, totalPages]);
 
+  // 登录成功后自动跳转
+  useEffect(() => {
+    if (isLoggedIn && pendingRedirect) {
+      navigate(pendingRedirect);
+      setPendingRedirect(null);
+    }
+  }, [isLoggedIn, pendingRedirect, navigate]);
+
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return '-';
     const date = new Date(dateStr);
@@ -241,6 +250,20 @@ const Home: React.FC = () => {
           >
             <PenLine size={16} />
             写文章
+          </button>
+          <button
+            onClick={() => {
+              if (isLoggedIn) {
+                navigate('/admin/dashboard');
+              } else {
+                setPendingRedirect('/admin/dashboard');
+                setIsLoginModalOpen(true);
+              }
+            }}
+            className="flex items-center gap-1 text-sm text-slate-600 hover:text-sky-500 transition-colors px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-sky-300 hover:bg-sky-50 shadow-sm"
+          >
+            <Folder size={16} />
+            文章管理
           </button>
           <button
             onClick={handleExportAll}
