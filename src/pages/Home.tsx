@@ -14,6 +14,7 @@ const Home: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchType, setSearchType] = useState<'global' | 'title' | 'content'>('global');
   const [selectedCategory, setSelectedCategory] = useState('全部');
   const [selectedTag, setSelectedTag] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
@@ -132,18 +133,28 @@ const Home: React.FC = () => {
 
   const filteredPosts = useMemo(() => {
     return posts.filter(post => {
-      const matchSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase());
+      const query = searchQuery.toLowerCase();
+      let matchSearch = true;
+      if (query) {
+        if (searchType === 'title') {
+          matchSearch = post.title.toLowerCase().includes(query);
+        } else if (searchType === 'content') {
+          matchSearch = post.content.toLowerCase().includes(query);
+        } else {
+          matchSearch = post.title.toLowerCase().includes(query) || post.content.toLowerCase().includes(query);
+        }
+      }
       const matchCategory = selectedCategory === '全部' || (post.category || '未分类') === selectedCategory;
       const matchTag = !selectedTag || post.tags?.includes(selectedTag);
       const matchYear = !selectedYear || (post.created_at && formatDate(post.created_at) === selectedYear);
       return matchSearch && matchCategory && matchTag && matchYear;
     });
-  }, [posts, searchQuery, selectedCategory, selectedTag, selectedYear]);
+  }, [posts, searchQuery, searchType, selectedCategory, selectedTag, selectedYear]);
 
   // 当筛选条件变化时重置到第1页
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, selectedCategory, selectedTag, selectedYear]);
+  }, [searchQuery, searchType, selectedCategory, selectedTag, selectedYear]);
 
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
   const paginatedPosts = useMemo(() => {
@@ -345,14 +356,23 @@ const Home: React.FC = () => {
         <p className="text-slate-500 mb-6">记录技术成长，分享编程心得</p>
 
         {/* 搜索框 */}
-        <div className="relative max-w-md mx-auto">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+        <div className="relative max-w-lg mx-auto flex items-center border-2 border-slate-200 rounded-xl focus-within:border-sky-400 transition-colors bg-white overflow-hidden">
+          <select
+            value={searchType}
+            onChange={(e) => setSearchType(e.target.value as 'global' | 'title' | 'content')}
+            className="h-full pl-3 pr-2 py-2.5 bg-slate-50 text-sm text-slate-600 border-r border-slate-200 focus:outline-none cursor-pointer appearance-none"
+          >
+            <option value="global">全局</option>
+            <option value="title">标题</option>
+            <option value="content">内容</option>
+          </select>
+          <Search className="absolute left-24 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="搜索文章标题..."
-            className="w-full pl-10 pr-4 py-2.5 border-2 border-slate-200 rounded-xl focus:border-sky-400 focus:outline-none transition-colors"
+            placeholder="搜索文章..."
+            className="flex-1 pl-10 pr-4 py-2.5 focus:outline-none"
           />
         </div>
       </motion.div>
