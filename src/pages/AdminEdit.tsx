@@ -98,12 +98,14 @@ const AdminEdit: React.FC = () => {
       if (isEdit && id) {
         await api.updatePost(id, formData);
         alert('文章更新成功');
+        pendingSave.current = false;
+        navigate(`/post/${id}`);
       } else {
-        await api.createPost(formData);
+        const post = await api.createPost(formData);
         alert('文章发布成功');
+        pendingSave.current = false;
+        navigate(`/post/${post.id}`);
       }
-      pendingSave.current = false;
-      navigate('/admin/dashboard');
     } catch (err: any) {
       const msg = err.message || '操作失败';
       if (msg.includes('token') || msg.includes('未授权') || msg.includes('401')) {
