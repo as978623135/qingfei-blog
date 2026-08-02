@@ -644,20 +644,20 @@ const Home: React.FC = () => {
             try {
               const token = safeStorage.getItem('admin_token');
               if (deleted.length > 0) {
-                await fetch('/api/categories/batch-delete', {
+                await fetch('/api/posts/categories/batch-delete', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                   body: JSON.stringify({ categories: deleted }),
                 });
               }
               if (added.length > 0) {
-                await fetch('/api/categories/add', {
+                await fetch('/api/posts/categories/add', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                   body: JSON.stringify({ categories: added }),
                 });
               }
-              await fetch('/api/categories/reorder', {
+              await fetch('/api/posts/categories/reorder', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                 body: JSON.stringify({ order: newOrder }),
