@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Clock, Search, Folder, Archive, Home as HomeIcon, Palette, Volume2, VolumeX, Download, Share2, Check, PenLine } from 'lucide-react';
+import { Calendar, Clock, Search, Folder, Archive, Home as HomeIcon, Palette, Volume2, VolumeX, Download, Share2, Check, PenLine, Settings } from 'lucide-react';
 import JSZip from 'jszip';
 import { api, Post } from '../services/api';
 import { useClickSoundContext } from '../components/ClickSoundProvider';
 import safeStorage from '../utils/storage';
 import AdminLoginModal from '../components/AdminLoginModal';
+import CategoryManageModal from '../components/CategoryManageModal';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ const Home: React.FC = () => {
   const [pendingRedirect, setPendingRedirect] = useState<string | null>(null);
   const [bgImage, setBgImage] = useState('');
   const [showBgPanel, setShowBgPanel] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [copiedId, setCopiedId] = useState<number | null>(null);
@@ -396,6 +398,15 @@ const Home: React.FC = () => {
               <Folder size={16} className="text-sky-500" />
               文章分类
             </h3>
+            {isLoggedIn && (
+              <button
+                onClick={() => setShowCategoryModal(true)}
+                className="absolute top-4 right-4 text-slate-400 hover:text-sky-500 transition-colors"
+                title="管理分类"
+              >
+                <Settings size={16} />
+              </button>
+            )}
             <ul className="space-y-1">
               {categories.map(cat => (
                 <li key={cat}>
@@ -618,6 +629,41 @@ const Home: React.FC = () => {
         onClose={() => setIsLoginModalOpen(false)}
         onSuccess={() => setIsLoggedIn(true)}
         redirectToEdit={false}
+      />
+
+      {/* 分类管理弹窗 */}
+      <CategoryManageModal
+        isOpen={showCategoryModal}
+        onClose={() => setShowCategoryModal(false)}
+        categories={categories.filter(c => c !== '全部')}
+        onSave={async (newCats, deleted, added) => {
+          try {
+            const token = safeStorage.getItem('admin_token');
+            if (deleted.length > 0) {
+              await fetch('/api/categories/batch-delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify({ categories: deleted }),
+              });
+            }
+            if (added.length > 0) {
+              await fetch('/api/categories/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify({ categories: added }),
+              });
+            }
+            await fetch('/api/categories/reorder', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify({ order: newCats }),
+            });
+            const postsData = await api.getPosts();
+            setPosts(postsData);
+          } catch (err) {
+            console.error('分类管理失败:', err);
+          }
+        }}
       />
     </div>
   );

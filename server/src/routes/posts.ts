@@ -10,6 +10,10 @@ import {
   getAllCategories,
   getAllTags,
   getArchives,
+  batchDeleteCategories,
+  setCategoryOrder,
+  getCustomCategories,
+  setCustomCategories,
   Post
 } from '../db';
 import { authMiddleware, AuthRequest } from '../middleware/auth';
@@ -151,6 +155,40 @@ router.get('/meta/archives', (req, res) => {
   } catch (err) {
     res.status(500).json({ error: '获取归档失败' });
   }
+});
+
+// 批量删除分类
+router.post('/categories/batch-delete', authMiddleware, (req: AuthRequest, res) => {
+  const { categories } = req.body;
+  if (!Array.isArray(categories) || categories.length === 0) {
+    return res.status(400).json({ error: '请选择要删除的分类' });
+  }
+  batchDeleteCategories(categories);
+  res.json({ success: true });
+});
+
+// 保存分类排序
+router.post('/categories/reorder', authMiddleware, (req: AuthRequest, res) => {
+  const { order } = req.body;
+  if (!Array.isArray(order)) {
+    return res.status(400).json({ error: '排序数据格式错误' });
+  }
+  setCategoryOrder(order);
+  res.json({ success: true });
+});
+
+// 新增空分类
+router.post('/categories/add', authMiddleware, (req: AuthRequest, res) => {
+  const { name } = req.body;
+  if (!name || typeof name !== 'string') {
+    return res.status(400).json({ error: '分类名称不能为空' });
+  }
+  const custom = getCustomCategories();
+  if (!custom.includes(name)) {
+    custom.push(name);
+    setCustomCategories(custom);
+  }
+  res.json({ success: true });
 });
 
 export default router;

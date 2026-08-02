@@ -137,7 +137,47 @@ export function getAllCategories(): string[] {
   const stmt = db.prepare('SELECT DISTINCT category FROM posts');
   const rows = stmt.all() as any[];
   const categories = rows.map(r => r.category || '未分类');
-  return ['全部分类', ...categories];
+  
+  const custom = getCustomCategories();
+  const order = getCategoryOrder();
+  const all = [...new Set([...custom, ...categories])];
+  
+  if (order.length > 0) {
+    const ordered = order.filter(c => all.includes(c));
+    const unordered = all.filter(c => !order.includes(c));
+    return ['全部分类', ...ordered, ...unordered];
+  }
+  return ['全部分类', ...all];
+}
+
+export function batchDeleteCategories(categories: string[]): void {
+  const db = getDb();
+  const placeholders = categories.map(() => '?').join(',');
+  const stmt = db.prepare(`UPDATE posts SET category = '未分类' WHERE category IN (${placeholders})`);
+  stmt.run(...categories);
+  
+  const order = getCategoryOrder().filter(c => !categories.includes(c));
+  setCategoryOrder(order);
+  const custom = getCustomCategories().filter(c => !categories.includes(c));
+  setCustomCategories(custom);
+}
+
+export function getCategoryOrder(): string[] {
+  const value = getAdminSetting('category_order');
+  return value ? JSON.parse(value) : [];
+}
+
+export function setCategoryOrder(order: string[]): void {
+  setAdminSetting('category_order', JSON.stringify(order));
+}
+
+export function getCustomCategories(): string[] {
+  const value = getAdminSetting('custom_categories');
+  return value ? JSON.parse(value) : [];
+}
+
+export function setCustomCategories(categories: string[]): void {
+  setAdminSetting('custom_categories', JSON.stringify(categories));
 }
 
 export function getAllTags(): string[] {
