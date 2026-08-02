@@ -123,12 +123,10 @@ const PostDetail: React.FC = () => {
               <Calendar size={16} className="text-sky-500" />
               发布于 {formatDate(post.created_at)}
             </span>
-            {post.updated_at !== post.created_at && (
-              <span className="flex items-center gap-2">
-                <Edit size={16} className="text-sky-500" />
-                更新于 {formatDate(post.updated_at)}
-              </span>
-            )}
+            <span className="flex items-center gap-2">
+              <Edit size={16} className="text-sky-500" />
+              更新于 {formatDate(post.updated_at)}
+            </span>
           </div>
         </header>
 
