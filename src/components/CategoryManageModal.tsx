@@ -130,7 +130,7 @@ export default function CategoryManageModal({ categories, onClose, onSave }: Cat
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden max-h-[80vh] flex flex-col"
+          className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden max-h-[80vh] flex flex-col"
           onClick={e => e.stopPropagation()}
         >
           <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
@@ -223,33 +223,33 @@ export default function CategoryManageModal({ categories, onClose, onSave }: Cat
             </ul>
           </div>
 
-          <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between">
+          <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between flex-wrap gap-3">
             <div className="flex items-center gap-2 text-sm text-slate-500">
               {selected.size > 0 && (
                 <>
-                  <AlertTriangle size={16} className="text-amber-500" />
-                  <span>删除 {selected.size} 个分类，文章将归类到"未分类"</span>
+                  <AlertTriangle size={16} className="text-amber-500 flex-shrink-0" />
+                  <span>文章将归入"未分类"</span>
                 </>
               )}
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-shrink-0">
               {selected.size > 0 && (
                 <button
                   onClick={handleDelete}
-                  className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-1"
+                  className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-1 whitespace-nowrap"
                 >
                   <Trash2 size={16} /> 删除选中 ({selected.size})
                 </button>
               )}
               <button
                 onClick={onClose}
-                className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors whitespace-nowrap"
               >
                 取消
               </button>
               <button
                 onClick={handleSave}
-                className="px-4 py-2 text-sm bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition-colors flex items-center gap-1"
+                className="px-4 py-2 text-sm bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition-colors flex items-center gap-1 whitespace-nowrap"
               >
                 <Check size={16} /> 保存
               </button>
