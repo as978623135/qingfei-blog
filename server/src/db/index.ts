@@ -162,6 +162,17 @@ export function batchDeleteCategories(categories: string[]): void {
   setCustomCategories(custom);
 }
 
+export function renameCategory(oldName: string, newName: string): void {
+  const db = getDb();
+  const stmt = db.prepare('UPDATE posts SET category = ? WHERE category = ?');
+  stmt.run(newName, oldName);
+
+  const order = getCategoryOrder().map(c => c === oldName ? newName : c);
+  setCategoryOrder(order);
+  const custom = getCustomCategories().map(c => c === oldName ? newName : c);
+  setCustomCategories(custom);
+}
+
 export function getCategoryOrder(): string[] {
   const value = getAdminSetting('category_order');
   return value ? JSON.parse(value) : [];

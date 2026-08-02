@@ -11,6 +11,7 @@ import {
   getAllTags,
   getArchives,
   batchDeleteCategories,
+  renameCategory,
   setCategoryOrder,
   getCustomCategories,
   setCustomCategories,
@@ -188,6 +189,19 @@ router.post('/categories/add', authMiddleware, (req: AuthRequest, res) => {
     custom.push(name);
     setCustomCategories(custom);
   }
+  res.json({ success: true });
+});
+
+// 重命名分类
+router.post('/categories/rename', authMiddleware, (req: AuthRequest, res) => {
+  const { oldName, newName } = req.body;
+  if (!oldName || !newName || typeof oldName !== 'string' || typeof newName !== 'string') {
+    return res.status(400).json({ error: '参数错误' });
+  }
+  if (oldName === newName) {
+    return res.json({ success: true });
+  }
+  renameCategory(oldName, newName);
   res.json({ success: true });
 });
 

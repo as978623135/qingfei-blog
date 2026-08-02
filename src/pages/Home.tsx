@@ -637,7 +637,6 @@ const Home: React.FC = () => {
 
       {/* 分类管理弹窗 */}
       <CategoryManageModal
-        isOpen={showCategoryModal}
         onClose={() => setShowCategoryModal(false)}
         categories={categories.filter(c => c.name !== '全部')}
         onSave={async (newCats, deleted, added) => {

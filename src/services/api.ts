@@ -98,6 +98,13 @@ export const api = {
     });
   },
 
+  renameCategory: async (oldName: string, newName: string): Promise<{ success: boolean; updated: number }> => {
+    return fetchJson<{ success: boolean; updated: number }>('/api/posts/categories/rename', {
+      method: 'POST',
+      body: JSON.stringify({ oldName, newName })
+    });
+  },
+
   login: async (password: string): Promise<{ success: boolean; token?: string }> => {
     const res = await fetch(`${API_BASE}/api/auth/login`, {
       method: 'POST',
