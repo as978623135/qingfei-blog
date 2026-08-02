@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Calendar, Edit, Share2, ThumbsUp, PenLine, Download, Plus } from 'lucide-react';
+import { ArrowLeft, Calendar, Edit, Share2, ThumbsUp, PenLine, Download, Plus, Trash2 } from 'lucide-react';
 import { api, Post } from '../services/api';
 import safeStorage from '../utils/storage';
 import MarkdownRenderer from '../components/MarkdownRenderer';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
 
 const PostDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,6 +14,7 @@ const PostDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [liked, setLiked] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     setIsLoggedIn(!!safeStorage.getItem('admin_token'));
@@ -74,6 +76,13 @@ const PostDetail: React.FC = () => {
               >
                 <PenLine size={16} />
                 编辑文章
+              </button>
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-red-200 bg-white text-red-600 hover:border-red-300 hover:bg-red-50 transition-colors shadow-sm text-sm"
+              >
+                <Trash2 size={16} />
+                删除文章
               </button>
             </>
           )}
@@ -155,6 +164,22 @@ const PostDetail: React.FC = () => {
           </button>
         </div>
       </motion.article>
+
+      <DeleteConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={async () => {
+          if (!id) return;
+          try {
+            await api.deletePost(id);
+            setShowDeleteModal(false);
+            navigate('/');
+          } catch (err) {
+            console.error('删除文章失败:', err);
+            alert('删除文章失败');
+          }
+        }}
+      />
     </div>
   );
 };
