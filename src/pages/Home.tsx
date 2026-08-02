@@ -19,7 +19,7 @@ const Home: React.FC = () => {
   const [selectedTag, setSelectedTag] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
-  const [weather, setWeather] = useState({ city: '定位中...', temp: '--', condition: '☀️' });
+  const [weather] = useState({ city: '北京', temp: '25°C', condition: '☀️' });
   const [bgType, setBgType] = useState<'color' | 'image'>('color');
   const [selectedColor, setSelectedColor] = useState('#e0f2fe');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -68,29 +68,7 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     loadPosts();
-    loadWeather();
   }, []);
-
-  const loadWeather = async () => {
-    try {
-      const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject);
-      });
-      const { latitude, longitude } = pos.coords;
-      const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
-      const data = await res.json();
-      const cityRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=zh`);
-      const cityData = await cityRes.json();
-      const condition = data.current_weather.weathercode < 3 ? '☀️' : data.current_weather.weathercode < 50 ? '☁️' : '🌧️';
-      setWeather({
-        city: cityData.city || cityData.locality || '本地',
-        temp: Math.round(data.current_weather.temperature) + '°C',
-        condition
-      });
-    } catch {
-      setWeather({ city: '北京', temp: '25°C', condition: '☀️' });
-    }
-  };
 
   const loadPosts = async () => {
     try {
