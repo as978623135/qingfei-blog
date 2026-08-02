@@ -636,30 +636,31 @@ const Home: React.FC = () => {
       />
 
       {/* 分类管理弹窗 */}
-      <CategoryManageModal
-        onClose={() => setShowCategoryModal(false)}
-        categories={categories.filter(c => c.name !== '全部')}
-        onSave={async (newCats, deleted, added) => {
-          try {
-            const token = safeStorage.getItem('admin_token');
-            if (deleted.length > 0) {
-              await fetch('/api/categories/batch-delete', {
+      {showCategoryModal && (
+        <CategoryManageModal
+          onClose={() => setShowCategoryModal(false)}
+          categories={categories.filter(c => c.name !== '全部')}
+          onSave={async (deleted, newOrder, added) => {
+            try {
+              const token = safeStorage.getItem('admin_token');
+              if (deleted.length > 0) {
+                await fetch('/api/categories/batch-delete', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                  body: JSON.stringify({ categories: deleted }),
+                });
+              }
+              if (added.length > 0) {
+                await fetch('/api/categories/add', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                  body: JSON.stringify({ categories: added }),
+                });
+              }
+              await fetch('/api/categories/reorder', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                body: JSON.stringify({ categories: deleted }),
-              });
-            }
-            if (added.length > 0) {
-              await fetch('/api/categories/add', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                body: JSON.stringify({ categories: added }),
-              });
-            }
-            await fetch('/api/categories/reorder', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-              body: JSON.stringify({ order: newCats }),
+                body: JSON.stringify({ order: newOrder }),
             });
             const postsData = await api.getPosts();
             setPosts(postsData);
@@ -668,6 +669,7 @@ const Home: React.FC = () => {
           }
         }}
       />
+      )}
     </div>
   );
 };

@@ -100,6 +100,15 @@ export default function CategoryManageModal({ categories, onClose, onSave }: Cat
     }
   };
 
+  const handleDelete = () => {
+    if (selected.size === 0) return;
+    if (!confirm(`确定要删除选中的 ${selected.size} 个分类吗？这些分类下的文章将自动归类到"未分类"。`)) return;
+    const deleted = Array.from(selected);
+    setItems(items.filter(i => !selected.has(i.name)));
+    setSelected(new Set());
+    onSave(deleted, items.filter(i => !selected.has(i.name)).map(i => i.name), []);
+  };
+
   const handleSave = () => {
     const deleted = categories
       .map(c => c.name)
@@ -224,6 +233,14 @@ export default function CategoryManageModal({ categories, onClose, onSave }: Cat
               )}
             </div>
             <div className="flex gap-2">
+              {selected.size > 0 && (
+                <button
+                  onClick={handleDelete}
+                  className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-1"
+                >
+                  <Trash2 size={16} /> 删除选中 ({selected.size})
+                </button>
+              )}
               <button
                 onClick={onClose}
                 className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
