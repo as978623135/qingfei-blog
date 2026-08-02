@@ -18,7 +18,7 @@ const AdminEdit: React.FC = () => {
     category: ''
   });
   const [loading, setLoading] = useState(isEdit);
-  const [categories, setCategories] = useState<{ name: string; count: number }[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const pendingSave = useRef(false);
   const [showNewCategory, setShowNewCategory] = useState(false);
@@ -35,7 +35,7 @@ const AdminEdit: React.FC = () => {
   const loadCategories = async () => {
     try {
       const cats = await api.getCategories();
-      setCategories(cats);
+      setCategories(cats.filter(c => c !== '全部分类' && c !== '全部'));
     } catch {
       setCategories([]);
     }
@@ -199,7 +199,7 @@ const AdminEdit: React.FC = () => {
               >
                 <option value="">请选择分类</option>
                 {categories.map(cat => (
-                  <option key={cat.name} value={cat.name}>{cat.name}</option>
+                  <option key={cat} value={cat}>{cat}</option>
                 ))}
               </select>
               <button
@@ -227,8 +227,8 @@ const AdminEdit: React.FC = () => {
                 onClick={() => {
                   if (newCategory.trim()) {
                     setFormData({ ...formData, category: newCategory.trim() });
-                    if (!categories.some(c => c.name === newCategory.trim())) {
-                      setCategories([...categories, { name: newCategory.trim(), count: 0 }]);
+                    if (!categories.includes(newCategory.trim())) {
+                      setCategories([...categories, newCategory.trim()]);
                     }
                     setNewCategory('');
                     setShowNewCategory(false);

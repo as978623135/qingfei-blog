@@ -13,6 +13,7 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const { isEnabled, setEnabled } = useClickSoundContext();
   const [posts, setPosts] = useState<Post[]>([]);
+  const [categoryList, setCategoryList] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchType, setSearchType] = useState<'global' | 'title' | 'content'>('global');
@@ -74,8 +75,9 @@ const Home: React.FC = () => {
 
   const loadPosts = async () => {
     try {
-      const data = await api.getPosts();
-      setPosts(data);
+      const [postsData, catsData] = await Promise.all([api.getPosts(), api.getCategories()]);
+      setPosts(postsData);
+      setCategoryList(catsData);
     } catch (err) {
       console.error('加载文章失败:', err);
     } finally {
@@ -89,8 +91,14 @@ const Home: React.FC = () => {
       const cat = p.category || '未分类';
       catMap.set(cat, (catMap.get(cat) || 0) + 1);
     });
-    return [{ name: '全部', count: posts.length }, ...Array.from(catMap.entries()).map(([name, count]) => ({ name, count }))];
-  }, [posts]);
+    // 以服务端分类列表（含自定义分类、已保存排序）为顺序基础，文章数从 posts 统计
+    const ordered = categoryList.filter(c => c !== '全部分类' && c !== '全部');
+    const extra = Array.from(catMap.keys()).filter(c => !ordered.includes(c));
+    return [
+      { name: '全部', count: posts.length },
+      ...[...ordered, ...extra].map(name => ({ name, count: catMap.get(name) || 0 })),
+    ];
+  }, [posts, categoryList]);
 
   const tags = useMemo(() => {
     const tagSet = new Set<string>();
@@ -643,31 +651,34 @@ const Home: React.FC = () => {
           onSave={async (deleted, newOrder, added) => {
             try {
               const token = safeStorage.getItem('admin_token');
+              const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+
               if (deleted.length > 0) {
-                await fetch('/api/posts/categories/batch-delete', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                  body: JSON.stringify({ categories: deleted }),
+                const res = await fetch('/api/posts/categories/batch-delete', {
+                  method: 'POST', headers, body: JSON.stringify({ categories: deleted }),
                 });
+                if (!res.ok) throw new Error((await res.json()).error || '删除分类失败');
               }
               if (added.length > 0) {
-                await fetch('/api/posts/categories/add', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                  body: JSON.stringify({ categories: added }),
+                const res = await fetch('/api/posts/categories/add', {
+                  method: 'POST', headers, body: JSON.stringify({ categories: added }),
                 });
+                if (!res.ok) throw new Error((await res.json()).error || '新增分类失败');
               }
-              await fetch('/api/posts/categories/reorder', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                body: JSON.stringify({ order: newOrder }),
-            });
-            const postsData = await api.getPosts();
-            setPosts(postsData);
-          } catch (err) {
-            console.error('分类管理失败:', err);
-          }
-        }}
+              const res = await fetch('/api/posts/categories/reorder', {
+                method: 'POST', headers, body: JSON.stringify({ order: newOrder }),
+              });
+              if (!res.ok) throw new Error((await res.json()).error || '保存排序失败');
+
+              const [postsData, catsData] = await Promise.all([api.getPosts(), api.getCategories()]);
+              setPosts(postsData);
+              setCategoryList(catsData);
+              setShowCategoryModal(false);
+            } catch (err) {
+              alert(err instanceof Error ? err.message : '分类管理失败，请重新登录后再试');
+              console.error('分类管理失败:', err);
+            }
+          }}
       />
       )}
     </div>
