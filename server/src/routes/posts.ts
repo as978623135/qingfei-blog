@@ -178,18 +178,34 @@ router.post('/categories/reorder', authMiddleware, (req: AuthRequest, res) => {
   res.json({ success: true });
 });
 
-// 新增空分类
+// 批量新增自定义分类
 router.post('/categories/add', authMiddleware, (req: AuthRequest, res) => {
-  const { name } = req.body;
-  if (!name || typeof name !== 'string') {
-    return res.status(400).json({ error: '分类名称不能为空' });
+  const { categories } = req.body;
+  if (!categories || !Array.isArray(categories) || categories.length === 0) {
+    return res.status(400).json({ error: '无效的分类列表' });
   }
+
   const custom = getCustomCategories();
-  if (!custom.includes(name)) {
-    custom.push(name);
+  const added: string[] = [];
+  const existing: string[] = [];
+
+  for (const name of categories) {
+    if (typeof name === 'string' && name.trim()) {
+      const trimmed = name.trim();
+      if (!custom.includes(trimmed)) {
+        custom.push(trimmed);
+        added.push(trimmed);
+      } else {
+        existing.push(trimmed);
+      }
+    }
+  }
+
+  if (added.length > 0) {
     setCustomCategories(custom);
   }
-  res.json({ success: true });
+
+  res.json({ success: true, added, existing });
 });
 
 // 重命名分类
