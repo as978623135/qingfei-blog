@@ -18,7 +18,7 @@ const AdminEdit: React.FC = () => {
     category: ''
   });
   const [loading, setLoading] = useState(isEdit);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<{ name: string; count: number }[]>([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const pendingSave = useRef(false);
   const [showNewCategory, setShowNewCategory] = useState(false);
@@ -199,7 +199,7 @@ const AdminEdit: React.FC = () => {
               >
                 <option value="">请选择分类</option>
                 {categories.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
+                  <option key={cat.name} value={cat.name}>{cat.name}</option>
                 ))}
               </select>
               <button
@@ -227,8 +227,8 @@ const AdminEdit: React.FC = () => {
                 onClick={() => {
                   if (newCategory.trim()) {
                     setFormData({ ...formData, category: newCategory.trim() });
-                    if (!categories.includes(newCategory.trim())) {
-                      setCategories([...categories, newCategory.trim()]);
+                    if (!categories.some(c => c.name === newCategory.trim())) {
+                      setCategories([...categories, { name: newCategory.trim(), count: 0 }]);
                     }
                     setNewCategory('');
                     setShowNewCategory(false);

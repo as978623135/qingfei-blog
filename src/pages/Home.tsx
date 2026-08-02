@@ -31,7 +31,7 @@ const Home: React.FC = () => {
   const [showCategoryModal, setShowCategoryModal] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [copiedId, setCopiedId] = useState<number | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [pageTip, setPageTip] = useState('');
   const lastWheelTime = useRef(0);
   const postsPerPage = 5;
@@ -84,8 +84,12 @@ const Home: React.FC = () => {
   };
 
   const categories = useMemo(() => {
-    const cats = new Set(posts.map(p => p.category || '未分类'));
-    return ['全部', ...Array.from(cats)];
+    const catMap = new Map<string, number>();
+    posts.forEach(p => {
+      const cat = p.category || '未分类';
+      catMap.set(cat, (catMap.get(cat) || 0) + 1);
+    });
+    return [{ name: '全部', count: posts.length }, ...Array.from(catMap.entries()).map(([name, count]) => ({ name, count }))];
   }, [posts]);
 
   const tags = useMemo(() => {
@@ -409,18 +413,18 @@ const Home: React.FC = () => {
             )}
             <ul className="space-y-1">
               {categories.map(cat => (
-                <li key={cat}>
+                <li key={cat.name}>
                   <button
-                    onClick={() => { setSelectedCategory(cat); setSelectedTag(''); setSelectedYear(''); }}
+                    onClick={() => { setSelectedCategory(cat.name); setSelectedTag(''); setSelectedYear(''); }}
                     className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                      selectedCategory === cat
+                      selectedCategory === cat.name
                         ? 'bg-sky-500 text-white'
                         : 'text-slate-600 hover:bg-sky-50'
                     }`}
                   >
-                    {cat}
+                    {cat.name}
                     <span className="ml-2 text-xs opacity-70">
-                      ({cat === '全部' ? posts.length : posts.filter(p => (p.category || '未分类') === cat).length})
+                      ({cat.count})
                     </span>
                   </button>
                 </li>
@@ -635,7 +639,7 @@ const Home: React.FC = () => {
       <CategoryManageModal
         isOpen={showCategoryModal}
         onClose={() => setShowCategoryModal(false)}
-        categories={categories.filter(c => c !== '全部')}
+        categories={categories.filter(c => c.name !== '全部')}
         onSave={async (newCats, deleted, added) => {
           try {
             const token = safeStorage.getItem('admin_token');

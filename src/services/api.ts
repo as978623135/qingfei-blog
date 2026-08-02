@@ -62,8 +62,8 @@ export const api = {
     return fetchJson<Post[]>(`/api/posts/search/${encodeURIComponent(keyword)}`);
   },
 
-  getCategories: async (): Promise<string[]> => {
-    return fetchJson<string[]>('/api/posts/meta/categories');
+  getCategories: async (): Promise<{ name: string; count: number }[]> => {
+    return fetchJson<{ name: string; count: number }[]>('/api/posts/meta/categories');
   },
 
   getTags: async (): Promise<string[]> => {
