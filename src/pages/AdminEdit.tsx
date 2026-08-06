@@ -119,11 +119,12 @@ const AdminEdit: React.FC = () => {
   };
 
   if (loading) {
-    return <div className="container py-20 text-center text-slate-400">加载中...</div>;
+    return <div className="container"><div className="py-20 text-center text-slate-400">加载中...</div></div>;
   }
 
   return (
-    <div className="container py-16">
+    <div className="container">
+      <div className="py-16">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -254,6 +255,7 @@ const AdminEdit: React.FC = () => {
 
         </form>
       </motion.div>
+      </div>
 
       <AdminLoginModal
         isOpen={showLoginModal}
