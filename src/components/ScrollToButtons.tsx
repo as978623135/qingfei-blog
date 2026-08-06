@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { ArrowUp, ArrowDown } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { ArrowUp, ArrowDown, Plus, Home } from 'lucide-react';
 
 const ScrollToButtons: React.FC = () => {
   const [visible, setVisible] = useState(false);
@@ -13,6 +13,7 @@ const ScrollToButtons: React.FC = () => {
     location.pathname.startsWith('/post/') ||
     location.pathname === '/admin/dashboard' ||
     location.pathname === '/admin/edit';
+  const isDashboard = location.pathname === '/admin/dashboard';
 
   useEffect(() => {
     if (isLoginPage || alwaysVisible) return;
@@ -41,27 +42,49 @@ const ScrollToButtons: React.FC = () => {
 
   const show = alwaysVisible || visible;
 
+  const btnBase = 'w-12 h-12 rounded-full flex items-center justify-center shadow-xl transition-colors';
+
   return (
     <div
-      className={`fixed top-1/2 -translate-y-1/2 right-6 z-50 flex flex-col gap-2 transition-opacity duration-300 ${
+      className={`fixed top-1/2 -translate-y-1/2 right-6 z-50 flex flex-col gap-3 transition-opacity duration-300 ${
         show ? 'opacity-100' : 'opacity-0 pointer-events-none'
       }`}
     >
+      {isDashboard && (
+        <>
+          <Link
+            to="/admin/edit"
+            title="新建文章"
+            aria-label="新建文章"
+            className={`${btnBase} bg-sky-500 hover:bg-sky-600 text-white`}
+          >
+            <Plus size={20} />
+          </Link>
+          <Link
+            to="/"
+            title="返回首页"
+            aria-label="返回首页"
+            className={`${btnBase} bg-white hover:bg-slate-50 text-slate-600 border border-slate-200`}
+          >
+            <Home size={20} />
+          </Link>
+        </>
+      )}
       <button
         onClick={scrollToTop}
         title="回到顶部"
-        className="w-10 h-10 rounded-full bg-slate-800/70 hover:bg-slate-800 text-white flex items-center justify-center shadow-lg backdrop-blur-sm transition-colors"
         aria-label="回到顶部"
+        className={`${btnBase} bg-slate-800 hover:bg-slate-700 text-white ring-2 ring-white/60`}
       >
-        <ArrowUp size={18} />
+        <ArrowUp size={20} />
       </button>
       <button
         onClick={scrollToBottom}
         title="回到底部"
-        className="w-10 h-10 rounded-full bg-slate-800/70 hover:bg-slate-800 text-white flex items-center justify-center shadow-lg backdrop-blur-sm transition-colors"
         aria-label="回到底部"
+        className={`${btnBase} bg-slate-800 hover:bg-slate-700 text-white ring-2 ring-white/60`}
       >
-        <ArrowDown size={18} />
+        <ArrowDown size={20} />
       </button>
     </div>
   );
