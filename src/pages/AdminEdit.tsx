@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Save, X, Feather, Upload, Plus, Tag } from 'lucide-react';
+import { Save, X, Feather, Upload, Plus, Tag, ArrowUp, ArrowDown } from 'lucide-react';
 import { api, Post } from '../services/api';
 import MarkdownEditor from '../components/MarkdownEditor';
 import AdminLoginModal from '../components/AdminLoginModal';
@@ -24,6 +24,7 @@ const AdminEdit: React.FC = () => {
   const [showNewCategory, setShowNewCategory] = useState(false);
   const [newCategory, setNewCategory] = useState('');
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const formRef = React.useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     loadCategories();
@@ -128,34 +129,23 @@ const AdminEdit: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         className="bg-white rounded-2xl shadow-lg border border-blue-100 p-8 max-w-screen-2xl mx-auto"
       >
-        <div className="flex items-center justify-between mb-8 pb-4 border-b border-blue-100">
+        <div className="flex items-center mb-8 pb-4 border-b border-blue-100">
           <div className="flex items-center gap-3">
             <Feather className="w-6 h-6 text-sky-500" />
             <h1 className="text-2xl font-semibold text-slate-800">
               {isEdit ? '编辑文章' : '新建文章'}
             </h1>
           </div>
-          {!isEdit && (
-            <>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".md,.markdown"
-                onChange={handleFileUpload}
-                className="hidden"
-              />
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="flex items-center gap-2 px-5 py-2.5 bg-white text-slate-600 rounded-lg font-medium border border-slate-200 hover:border-sky-300 hover:text-sky-500 transition-all"
-              >
-                <Upload size={18} /> 导入 Markdown
-              </button>
-            </>
-          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".md,.markdown"
+            onChange={handleFileUpload}
+            className="hidden"
+          />
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-slate-600 mb-2">
               文章标题 <span className="text-red-500">*</span>
@@ -262,23 +252,6 @@ const AdminEdit: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex gap-4 pt-4">
-            <button
-              type="submit"
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-sky-500 to-cyan-400 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-sky-200 transition-all"
-            >
-              <Save className="w-4 h-4" />
-              {isEdit ? '保存修改' : '发布文章'}
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate('/admin/dashboard')}
-              className="flex items-center gap-2 px-6 py-3 bg-slate-100 text-slate-600 rounded-xl font-medium hover:bg-slate-200 transition-colors"
-            >
-              <X className="w-4 h-4" />
-              取消
-            </button>
-          </div>
         </form>
       </motion.div>
 
@@ -294,6 +267,57 @@ const AdminEdit: React.FC = () => {
           }
         }}
       />
+
+      {/* 右侧边栏按钮组 */}
+      <div className="fixed top-1/2 -translate-y-1/2 right-6 z-50 flex flex-col gap-3">
+        {!isEdit && (
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            title="导入 Markdown"
+            aria-label="导入 Markdown"
+            className="w-12 h-12 rounded-full bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 flex items-center justify-center shadow-xl transition-colors"
+          >
+            <Upload size={20} />
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={() => formRef.current?.requestSubmit()}
+          title={isEdit ? '保存修改' : '发布文章'}
+          aria-label={isEdit ? '保存修改' : '发布文章'}
+          className="w-12 h-12 rounded-full bg-sky-500 hover:bg-sky-600 text-white flex items-center justify-center shadow-xl transition-colors"
+        >
+          <Save size={20} />
+        </button>
+        <button
+          type="button"
+          onClick={() => navigate('/admin/dashboard')}
+          title="取消"
+          aria-label="取消"
+          className="w-12 h-12 rounded-full bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 flex items-center justify-center shadow-xl transition-colors"
+        >
+          <X size={20} />
+        </button>
+        <button
+          type="button"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          title="回到顶部"
+          aria-label="回到顶部"
+          className="w-12 h-12 rounded-full bg-slate-800 hover:bg-slate-700 text-white ring-2 ring-white/60 flex items-center justify-center shadow-xl transition-colors"
+        >
+          <ArrowUp size={20} />
+        </button>
+        <button
+          type="button"
+          onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}
+          title="回到底部"
+          aria-label="回到底部"
+          className="w-12 h-12 rounded-full bg-slate-800 hover:bg-slate-700 text-white ring-2 ring-white/60 flex items-center justify-center shadow-xl transition-colors"
+        >
+          <ArrowDown size={20} />
+        </button>
+      </div>
     </div>
   );
 };
