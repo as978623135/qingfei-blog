@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Calendar, Edit, Share2, ThumbsUp, PenLine, Download, Plus, Trash2 } from 'lucide-react';
+import { ArrowUp, ArrowDown, Calendar, Edit, Share2, ThumbsUp, PenLine, Download, Plus, Trash2, Home } from 'lucide-react';
 import { api, Post } from '../services/api';
 import safeStorage from '../utils/storage';
 import MarkdownRenderer from '../components/MarkdownRenderer';
@@ -40,6 +40,20 @@ const PostDetail: React.FC = () => {
     return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
   };
 
+  const handleExport = () => {
+    if (!post) return;
+    const blob = new Blob(
+      [`# ${post.title}\n\n> 发布于 ${formatDate(post.created_at)}\n\n${post.content}`],
+      { type: 'text/markdown' }
+    );
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${post.title}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   if (loading) {
     return <div className="container py-20 text-center text-slate-400">加载中...</div>;
   }
@@ -54,67 +68,13 @@ const PostDetail: React.FC = () => {
   }
 
   return (
-    <div className="max-w-screen-2xl mx-auto px-4 py-12">
+    <div className="max-w-screen-2xl mx-auto px-4 pt-16 pb-12">
       <motion.article
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="mb-6 flex justify-end items-center gap-3">
-          {isLoggedIn && (
-            <>
-              <button
-                onClick={() => navigate('/admin/edit')}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-600 hover:bg-sky-50 transition-colors shadow-sm text-sm"
-              >
-                <Plus size={16} />
-                新建文章
-              </button>
-              <button
-                onClick={() => navigate(`/admin/edit/${id}`)}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-600 hover:bg-sky-50 transition-colors shadow-sm text-sm"
-              >
-                <PenLine size={16} />
-                编辑文章
-              </button>
-              <button
-                onClick={() => setShowDeleteModal(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-red-200 bg-white text-red-600 hover:border-red-300 hover:bg-red-50 transition-colors shadow-sm text-sm"
-              >
-                <Trash2 size={16} />
-                删除文章
-              </button>
-            </>
-          )}
-          <button
-            onClick={() => {
-              if (!post) return;
-              const blob = new Blob(
-                [`# ${post.title}\n\n> 发布于 ${formatDate(post.created_at)}\n\n${post.content}`],
-                { type: 'text/markdown' }
-              );
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement('a');
-              a.href = url;
-              a.download = `${post.title}.md`;
-              a.click();
-              URL.revokeObjectURL(url);
-            }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-600 hover:bg-sky-50 transition-colors shadow-sm text-sm"
-          >
-            <Download size={16} />
-            导出 Markdown
-          </button>
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-600 hover:bg-sky-50 transition-colors shadow-sm text-sm"
-          >
-            <ArrowLeft size={16} />
-            返回首页
-          </Link>
-        </div>
-
-        <header className="text-center pb-10 mb-10 border-b border-sky-100">
+        <header className="text-center bg-white/90 rounded-2xl p-8 md:p-10 shadow-lg shadow-sky-100/50 border border-sky-100 mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-5">
             {post.title}
           </h1>
@@ -162,6 +122,63 @@ const PostDetail: React.FC = () => {
           </button>
         </div>
       </motion.article>
+
+      {/* 右侧边栏按钮组 */}
+      <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3">
+        {isLoggedIn && (
+          <>
+            <button
+              onClick={() => navigate('/admin/edit')}
+              className="w-12 h-12 rounded-full bg-white text-slate-600 shadow-lg border border-slate-200 flex items-center justify-center hover:bg-slate-50 hover:text-sky-600 transition-colors"
+              title="新建文章"
+            >
+              <Plus size={20} />
+            </button>
+            <button
+              onClick={() => navigate(`/admin/edit/${id}`)}
+              className="w-12 h-12 rounded-full bg-sky-500 text-white shadow-lg shadow-sky-200 flex items-center justify-center hover:bg-sky-600 transition-colors"
+              title="编辑文章"
+            >
+              <PenLine size={20} />
+            </button>
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              className="w-12 h-12 rounded-full bg-white text-red-500 shadow-lg border border-red-100 flex items-center justify-center hover:bg-red-50 transition-colors"
+              title="删除文章"
+            >
+              <Trash2 size={20} />
+            </button>
+          </>
+        )}
+        <button
+          onClick={handleExport}
+          className="w-12 h-12 rounded-full bg-white text-slate-600 shadow-lg border border-slate-200 flex items-center justify-center hover:bg-slate-50 hover:text-sky-600 transition-colors"
+          title="导出 Markdown"
+        >
+          <Download size={20} />
+        </button>
+        <button
+          onClick={() => navigate('/')}
+          className="w-12 h-12 rounded-full bg-white text-slate-600 shadow-lg border border-slate-200 flex items-center justify-center hover:bg-slate-50 hover:text-sky-600 transition-colors"
+          title="返回首页"
+        >
+          <Home size={20} />
+        </button>
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="w-12 h-12 rounded-full bg-slate-800 text-white shadow-xl ring-2 ring-white/60 flex items-center justify-center hover:bg-slate-700 transition-colors"
+          title="回到顶部"
+        >
+          <ArrowUp size={20} />
+        </button>
+        <button
+          onClick={() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' })}
+          className="w-12 h-12 rounded-full bg-slate-800 text-white shadow-xl ring-2 ring-white/60 flex items-center justify-center hover:bg-slate-700 transition-colors"
+          title="回到底部"
+        >
+          <ArrowDown size={20} />
+        </button>
+      </div>
 
       <DeleteConfirmModal
         isOpen={showDeleteModal}

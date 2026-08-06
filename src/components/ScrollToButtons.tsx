@@ -8,12 +8,11 @@ const ScrollToButtons: React.FC = () => {
 
   // 排除登录页
   const isLoginPage = location.pathname === '/admin';
-  // 文章编辑页自建按钮组（含置顶置底），此组件不渲染
+  // 文章编辑页、文章预览页自建按钮组（含置顶置底），此组件不渲染
   const isEditPage = location.pathname.startsWith('/admin/edit');
-  // 文章管理、文章预览页始终显示
-  const alwaysVisible =
-    location.pathname.startsWith('/post/') ||
-    location.pathname === '/admin/dashboard';
+  const isPostPage = location.pathname.startsWith('/post/');
+  // 文章管理页始终显示
+  const alwaysVisible = location.pathname === '/admin/dashboard';
   const isDashboard = location.pathname === '/admin/dashboard';
 
   useEffect(() => {
@@ -39,7 +38,7 @@ const ScrollToButtons: React.FC = () => {
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   };
 
-  if (isLoginPage || isEditPage) return null;
+  if (isLoginPage || isEditPage || isPostPage) return null;
 
   const show = alwaysVisible || visible;
 
