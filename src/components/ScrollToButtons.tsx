@@ -8,9 +8,14 @@ const ScrollToButtons: React.FC = () => {
 
   // 排除登录页
   const isLoginPage = location.pathname === '/admin';
+  // 文章管理、文章预览、文章编辑页始终显示
+  const alwaysVisible =
+    location.pathname.startsWith('/post/') ||
+    location.pathname === '/admin/dashboard' ||
+    location.pathname === '/admin/edit';
 
   useEffect(() => {
-    if (isLoginPage) return;
+    if (isLoginPage || alwaysVisible) return;
 
     const handleScroll = () => {
       setVisible(window.scrollY > 200);
@@ -22,7 +27,7 @@ const ScrollToButtons: React.FC = () => {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [isLoginPage]);
+  }, [isLoginPage, alwaysVisible]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -34,10 +39,12 @@ const ScrollToButtons: React.FC = () => {
 
   if (isLoginPage) return null;
 
+  const show = alwaysVisible || visible;
+
   return (
     <div
       className={`fixed top-1/2 -translate-y-1/2 right-6 z-50 flex flex-col gap-2 transition-opacity duration-300 ${
-        visible ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        show ? 'opacity-100' : 'opacity-0 pointer-events-none'
       }`}
     >
       <button
