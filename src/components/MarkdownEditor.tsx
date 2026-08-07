@@ -283,7 +283,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange, placeh
               </div>
               {videoCover && (
                 <div className="rounded-lg overflow-hidden border border-slate-200">
-                  <img src={videoCover} alt="视频封面预览" className="w-full aspect-video object-cover" />
+                  <img src={videoCover} alt="视频封面预览" referrerPolicy="no-referrer" className="w-full aspect-video object-cover" />
                 </div>
               )}
               <div>

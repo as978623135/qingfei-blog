@@ -47,7 +47,7 @@ const CodeBlock: React.FC<{ children: React.ReactNode; className?: string }> = (
 const BilibiliCard: React.FC<{ href: string; src: string; alt: string }> = ({ href, src, alt }) => (
   <a href={href} target="_blank" rel="noopener noreferrer" className="block my-6 group" style={{ textDecoration: 'none' }}>
     <div className="relative rounded-xl overflow-hidden shadow-lg border border-slate-200 bg-slate-900">
-      <img src={src} alt={alt} className="w-full aspect-video object-cover" />
+      <img src={src} alt={alt} referrerPolicy="no-referrer" className="w-full aspect-video object-cover" />
       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors" />
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="w-16 h-16 rounded-full bg-black/50 group-hover:bg-sky-500 group-hover:scale-110 flex items-center justify-center transition-all backdrop-blur-sm">

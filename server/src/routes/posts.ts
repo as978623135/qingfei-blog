@@ -54,7 +54,7 @@ router.get('/video-info', authMiddleware, async (req: AuthRequest, res) => {
     }
     res.json({
       title: data.data.title,
-      cover: data.data.pic,
+      cover: String(data.data.pic).replace(/^http:\/\//, 'https://'),
       url: `https://www.bilibili.com/video/${bvid}`
     });
   } catch (err) {
