@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, Play } from 'lucide-react';
 
 interface MarkdownRendererProps {
   content: string;
@@ -43,6 +43,27 @@ const CodeBlock: React.FC<{ children: React.ReactNode; className?: string }> = (
   );
 };
 
+// B站视频卡片：封面图 + 播放按钮 + 标题栏，点击跳转B站播放页
+const BilibiliCard: React.FC<{ href: string; src: string; alt: string }> = ({ href, src, alt }) => (
+  <a href={href} target="_blank" rel="noopener noreferrer" className="block my-6 group" style={{ textDecoration: 'none' }}>
+    <div className="relative rounded-xl overflow-hidden shadow-lg border border-slate-200 bg-slate-900">
+      <img src={src} alt={alt} className="w-full aspect-video object-cover" />
+      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors" />
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-16 h-16 rounded-full bg-black/50 group-hover:bg-sky-500 group-hover:scale-110 flex items-center justify-center transition-all backdrop-blur-sm">
+          <Play size={28} className="text-white ml-1" fill="currentColor" />
+        </div>
+      </div>
+      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-4 pb-3 pt-10">
+        <p className="text-white text-sm font-medium truncate">{alt}</p>
+      </div>
+      <div className="absolute top-3 right-3 px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-xs text-white font-medium">
+        bilibili
+      </div>
+    </div>
+  </a>
+);
+
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
   return (
     <div className="markdown-body prose prose-slate max-w-none">
@@ -73,11 +94,23 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
           ul: ({ children }) => <ul className="list-disc list-inside text-slate-700 mb-4 space-y-1">{children}</ul>,
           ol: ({ children }) => <ol className="list-decimal list-inside text-slate-700 mb-4 space-y-1">{children}</ol>,
           li: ({ children }) => <li className="leading-relaxed">{children}</li>,
-          a: ({ children, href }) => (
-            <a href={href} className="text-sky-500 hover:text-sky-600 underline transition-colors" target="_blank" rel="noopener noreferrer">
-              {children}
-            </a>
-          ),
+          a: ({ children, href }) => {
+            // 识别B站视频卡片语法：[![标题](封面)](https://www.bilibili.com/video/BV...)
+            if (href && /bilibili\.com\/video\//.test(href)) {
+              const imgChild = React.Children.toArray(children).find(
+                (c): c is React.ReactElement => React.isValidElement(c) && typeof (c.props as any)?.src === 'string'
+              );
+              if (imgChild) {
+                const { src, alt } = imgChild.props as { src: string; alt?: string };
+                return <BilibiliCard href={href} src={src} alt={alt || '点击查看视频'} />;
+              }
+            }
+            return (
+              <a href={href} className="text-sky-500 hover:text-sky-600 underline transition-colors" target="_blank" rel="noopener noreferrer">
+                {children}
+              </a>
+            );
+          },
           img: ({ src, alt }) => (
             <img src={src} alt={alt} className="max-w-full rounded-xl shadow-lg my-4" />
           ),

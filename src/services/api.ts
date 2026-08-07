@@ -66,6 +66,10 @@ export const api = {
     return fetchJson<string[]>('/api/posts/meta/categories');
   },
 
+  getVideoInfo: async (url: string): Promise<{ title: string; cover: string; url: string }> => {
+    return fetchJson(`/api/posts/video-info?url=${encodeURIComponent(url)}`);
+  },
+
   getTags: async (): Promise<string[]> => {
     return fetchJson<string[]>('/api/posts/meta/tags');
   },

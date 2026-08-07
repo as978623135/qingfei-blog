@@ -31,6 +31,37 @@ router.get('/', (req, res) => {
   }
 });
 
+// 查询B站视频信息（需要认证，用于编辑器插入视频卡片）
+router.get('/video-info', authMiddleware, async (req: AuthRequest, res) => {
+  const url = String(req.query.url || '');
+  const match = url.match(/BV[0-9A-Za-z]{10}/);
+  if (!match) {
+    res.status(400).json({ error: '未识别到有效的B站视频链接' });
+    return;
+  }
+  const bvid = match[0];
+  try {
+    const resp = await fetch(`https://api.bilibili.com/x/web-interface/view?bvid=${bvid}`, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Referer': 'https://www.bilibili.com'
+      }
+    });
+    const data = await resp.json() as any;
+    if (data.code !== 0 || !data.data) {
+      res.status(404).json({ error: '视频不存在或无法获取信息' });
+      return;
+    }
+    res.json({
+      title: data.data.title,
+      cover: data.data.pic,
+      url: `https://www.bilibili.com/video/${bvid}`
+    });
+  } catch (err) {
+    res.status(500).json({ error: '获取视频信息失败，请手动填写' });
+  }
+});
+
 // 获取单个文章
 router.get('/:id', (req, res) => {
   try {
