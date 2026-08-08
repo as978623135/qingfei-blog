@@ -66,7 +66,7 @@ export const api = {
     return fetchJson<string[]>('/api/posts/meta/categories');
   },
 
-  getVideoInfo: async (url: string): Promise<{ title: string; cover: string; url: string }> => {
+  getVideoInfo: async (url: string): Promise<{ platform: string; title: string; author?: string; cover: string; url: string }> => {
     return fetchJson(`/api/posts/video-info?url=${encodeURIComponent(url)}`);
   },
 

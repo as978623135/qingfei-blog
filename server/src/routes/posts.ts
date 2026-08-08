@@ -18,8 +18,15 @@ import {
   Post
 } from '../db';
 import { authMiddleware, AuthRequest } from '../middleware/auth';
+import fs from 'fs';
+import path from 'path';
 
 const router = Router();
+
+const UPLOAD_DIR = path.resolve(__dirname, '../../public/uploads');
+if (!fs.existsSync(UPLOAD_DIR)) {
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+}
 
 // 获取所有文章
 router.get('/', (req, res) => {
@@ -31,19 +38,89 @@ router.get('/', (req, res) => {
   }
 });
 
-// 查询B站视频信息（需要认证，用于编辑器插入视频卡片）
+// 查询视频信息（B站/抖音，需要认证，用于编辑器插入视频卡片）
+const UA_PC = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+const UA_MOBILE = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1';
+
+function findItemList(obj: any): any {
+  if (!obj || typeof obj !== 'object') return null;
+  if (Array.isArray(obj.item_list) && obj.item_list[0]) return obj.item_list[0];
+  for (const v of Object.values(obj)) {
+    const found = findItemList(v);
+    if (found) return found;
+  }
+  return null;
+}
+
 router.get('/video-info', authMiddleware, async (req: AuthRequest, res) => {
   const url = String(req.query.url || '');
+
+  // 抖音链接
+  if (/douyin\.com/.test(url)) {
+    try {
+      const linkMatch = url.match(/https?:\/\/[^\s]*douyin\.com\/[^\s]*/);
+      if (!linkMatch) {
+        res.status(400).json({ error: '未识别到有效的抖音视频链接' });
+        return;
+      }
+      // 跟随 302 重定向解析短链，提取视频 ID
+      const linkResp = await fetch(linkMatch[0], { redirect: 'follow', headers: { 'User-Agent': UA_PC } });
+      const videoId = linkResp.url.match(/\/(?:share\/)?video\/(\d+)/)?.[1];
+      if (!videoId) {
+        res.status(400).json({ error: '未识别到有效的抖音视频链接' });
+        return;
+      }
+      // 抓取分享页解析视频信息
+      const pageResp = await fetch(`https://www.iesdouyin.com/share/video/${videoId}/`, {
+        headers: { 'User-Agent': UA_MOBILE }
+      });
+      const html = await pageResp.text();
+      const dataMatch = html.match(/window\._ROUTER_DATA\s*=\s*(\{[\s\S]*?\})<\/script>/);
+      if (!dataMatch) {
+        res.status(502).json({ error: '解析视频信息失败，请手动填写' });
+        return;
+      }
+      const item = findItemList(JSON.parse(dataMatch[1]));
+      const rawDesc = item?.desc || '';
+      // 清理标题中的话题标签和@提及
+      const title = rawDesc.replace(/#[^\s#]+/g, '').replace(/@[^\s@]+/g, '').replace(/\s+/g, ' ').trim();
+      const coverUrl = item?.video?.cover?.url_list?.[0];
+      if (!title || !coverUrl) {
+        res.status(502).json({ error: '解析视频信息失败，请手动填写' });
+        return;
+      }
+      // 封面签名 URL 约 10 天过期，下载转存到本地
+      const coverResp = await fetch(coverUrl, { headers: { 'User-Agent': UA_MOBILE } });
+      if (!coverResp.ok) {
+        res.status(502).json({ error: '封面下载失败，请手动填写' });
+        return;
+      }
+      const filename = `dy-cover-${videoId}.webp`;
+      fs.writeFileSync(path.join(UPLOAD_DIR, filename), Buffer.from(await coverResp.arrayBuffer()));
+      res.json({
+        platform: 'douyin',
+        title,
+        author: item?.author?.nickname || '',
+        cover: `/uploads/${filename}`,
+        url: `https://www.douyin.com/video/${videoId}`
+      });
+    } catch (err) {
+      res.status(500).json({ error: '获取视频信息失败，请手动填写' });
+    }
+    return;
+  }
+
+  // B站链接
   const match = url.match(/BV[0-9A-Za-z]{10}/);
   if (!match) {
-    res.status(400).json({ error: '未识别到有效的B站视频链接' });
+    res.status(400).json({ error: '未识别到有效的视频链接（支持B站/抖音）' });
     return;
   }
   const bvid = match[0];
   try {
     const resp = await fetch(`https://api.bilibili.com/x/web-interface/view?bvid=${bvid}`, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'User-Agent': UA_PC,
         'Referer': 'https://www.bilibili.com'
       }
     });
@@ -53,7 +130,9 @@ router.get('/video-info', authMiddleware, async (req: AuthRequest, res) => {
       return;
     }
     res.json({
+      platform: 'bilibili',
       title: data.data.title,
+      author: data.data.owner?.name || '',
       cover: String(data.data.pic).replace(/^http:\/\//, 'https://'),
       url: `https://www.bilibili.com/video/${bvid}`
     });

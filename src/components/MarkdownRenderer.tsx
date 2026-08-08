@@ -43,8 +43,8 @@ const CodeBlock: React.FC<{ children: React.ReactNode; className?: string }> = (
   );
 };
 
-// B站视频卡片：封面图 + 播放按钮 + 标题栏，点击跳转B站播放页
-const BilibiliCard: React.FC<{ href: string; src: string; alt: string }> = ({ href, src, alt }) => (
+// 视频卡片：封面图 + 播放按钮 + 标题栏，点击跳转平台播放页
+const VideoCard: React.FC<{ href: string; src: string; alt: string; platform: string }> = ({ href, src, alt, platform }) => (
   <a href={href} target="_blank" rel="noopener noreferrer" className="block my-6 group" style={{ textDecoration: 'none' }}>
     <div className="relative rounded-xl overflow-hidden shadow-lg border border-slate-200 bg-slate-900">
       <img src={src} alt={alt} referrerPolicy="no-referrer" className="w-full aspect-video object-cover" />
@@ -58,7 +58,7 @@ const BilibiliCard: React.FC<{ href: string; src: string; alt: string }> = ({ hr
         <p className="text-white text-sm font-medium truncate">{alt}</p>
       </div>
       <div className="absolute top-3 right-3 px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-xs text-white font-medium">
-        bilibili
+        {platform}
       </div>
     </div>
   </a>
@@ -95,14 +95,16 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
           ol: ({ children }) => <ol className="list-decimal list-inside text-slate-700 mb-4 space-y-1">{children}</ol>,
           li: ({ children }) => <li className="leading-relaxed">{children}</li>,
           a: ({ children, href }) => {
-            // 识别B站视频卡片语法：[![标题](封面)](https://www.bilibili.com/video/BV...)
-            if (href && /bilibili\.com\/video\//.test(href)) {
+            // 识别视频卡片语法：[![标题](封面)](B站/抖音视频链接)
+            const platform = href && /bilibili\.com\/video\//.test(href) ? 'bilibili'
+              : href && /douyin\.com\/video\//.test(href) ? '抖音' : null;
+            if (href && platform) {
               const imgChild = React.Children.toArray(children).find(
                 (c): c is React.ReactElement => React.isValidElement(c) && typeof (c.props as any)?.src === 'string'
               );
               if (imgChild) {
                 const { src, alt } = imgChild.props as { src: string; alt?: string };
-                return <BilibiliCard href={href} src={src} alt={alt || '点击查看视频'} />;
+                return <VideoCard href={href} src={src} alt={alt || '点击查看视频'} platform={platform} />;
               }
             }
             return (
