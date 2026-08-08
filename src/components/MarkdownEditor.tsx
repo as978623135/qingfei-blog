@@ -198,6 +198,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange, placeh
         {toolbarItems.map((item, index) => (
           <button
             key={index}
+            type="button"
             onClick={item.action}
             title={item.title}
             className="p-2 rounded-lg text-slate-600 hover:bg-sky-200 hover:text-sky-700 transition-colors"
@@ -209,6 +210,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange, placeh
         {mediaItems.map((item, index) => (
           <button
             key={`media-${index}`}
+            type="button"
             onClick={item.action}
             title={item.title}
             disabled={item.disabled}
@@ -254,6 +256,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange, placeh
                 插入B站视频
               </h3>
               <button
+                type="button"
                 onClick={() => { setShowVideoModal(false); resetVideoModal(); }}
                 className="p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
               >
@@ -272,6 +275,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange, placeh
                     className="flex-1 px-3 py-2 border-2 border-slate-200 rounded-lg text-sm focus:border-sky-400 focus:outline-none"
                   />
                   <button
+                    type="button"
                     onClick={handleFetchVideoInfo}
                     disabled={videoLoading}
                     className="px-3 py-2 bg-sky-500 text-white text-sm rounded-lg hover:bg-sky-600 transition-colors disabled:opacity-50 flex items-center gap-1 whitespace-nowrap"
@@ -312,12 +316,14 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange, placeh
             </div>
             <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50">
               <button
+                type="button"
                 onClick={() => { setShowVideoModal(false); resetVideoModal(); }}
                 className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-200 rounded-lg transition-colors"
               >
                 取消
               </button>
               <button
+                type="button"
                 onClick={handleInsertVideo}
                 className="px-4 py-2 text-sm bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition-colors"
               >
