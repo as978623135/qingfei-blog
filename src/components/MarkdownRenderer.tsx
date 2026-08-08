@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-import { Copy, Check, Play } from 'lucide-react';
+import { Copy, Check, Play, Cloud, ExternalLink } from 'lucide-react';
 
 interface MarkdownRendererProps {
   content: string;
@@ -44,6 +44,44 @@ const CodeBlock: React.FC<{ children: React.ReactNode; className?: string }> = (
 };
 
 // 视频卡片：封面图 + 播放按钮 + 标题栏，点击跳转平台播放页
+const NETDISK_RULES: [RegExp, string][] = [
+  [/pan\.baidu\.com/, '百度网盘'],
+  [/123pan\.com|123684\.com|123912\.com|123pan\.cn/, '123云盘'],
+  [/alipan\.com|aliyundrive\.com/, '阿里云盘'],
+  [/pan\.quark\.cn/, '夸克网盘'],
+];
+
+const detectNetdisk = (href: string): string | null => {
+  for (const [re, name] of NETDISK_RULES) {
+    if (re.test(href)) return name;
+  }
+  return null;
+};
+
+const extractText = (node: React.ReactNode): string => {
+  if (typeof node === 'string' || typeof node === 'number') return String(node);
+  if (Array.isArray(node)) return node.map(extractText).join('');
+  if (React.isValidElement(node)) return extractText((node.props as any)?.children);
+  return '';
+};
+
+const NetdiskCard: React.FC<{ href: string; text: string; platform: string; pwd?: string }> = ({ href, text, platform, pwd }) => (
+  <a href={href} target="_blank" rel="noopener noreferrer" className="block my-4 group" style={{ textDecoration: 'none' }}>
+    <div className="flex items-center gap-3 p-4 rounded-xl border border-sky-200 bg-gradient-to-r from-sky-50 to-blue-50 hover:border-sky-400 hover:shadow-md transition-all">
+      <div className="w-10 h-10 rounded-lg bg-sky-500 flex items-center justify-center flex-shrink-0">
+        <Cloud size={20} className="text-white" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-medium text-slate-800 truncate">{text}</div>
+        <div className="text-xs text-slate-500 mt-0.5">
+          {platform}{pwd ? ` · 提取码：${pwd}` : ''}
+        </div>
+      </div>
+      <ExternalLink size={16} className="text-slate-400 group-hover:text-sky-500 flex-shrink-0 transition-colors" />
+    </div>
+  </a>
+);
+
 const VideoCard: React.FC<{ href: string; src: string; alt: string; platform: string }> = ({ href, src, alt, platform }) => (
   <a href={href} target="_blank" rel="noopener noreferrer" className="block my-6 group" style={{ textDecoration: 'none' }}>
     <div className="relative rounded-xl overflow-hidden shadow-lg border border-slate-200 bg-slate-900">
@@ -106,6 +144,15 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
                 const { src, alt } = imgChild.props as { src: string; alt?: string };
                 return <VideoCard href={href} src={src} alt={alt || '点击查看视频'} platform={platform} />;
               }
+            }
+            // 网盘链接：渲染为圆角矩形按钮卡片
+            const netdisk = href ? detectNetdisk(href) : null;
+            if (href && netdisk) {
+              const raw = extractText(children).trim();
+              const parts = raw.split('｜提取码：');
+              const text = parts[0] || '点击下载资源';
+              const pwd = parts[1] || undefined;
+              return <NetdiskCard href={href} text={text} platform={netdisk} pwd={pwd} />;
             }
             return (
               <a href={href} className="text-sky-500 hover:text-sky-600 underline transition-colors" target="_blank" rel="noopener noreferrer">

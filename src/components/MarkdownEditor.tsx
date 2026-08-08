@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef } from 'react';
 import MarkdownRenderer from './MarkdownRenderer';
 import {
   Bold, Italic, List, ListOrdered, Quote, Code, Link, Image, Table, Minus, Heading,
-  Upload, Video, AudioLines, Globe, ImagePlus, Tv, X, Loader2
+  Upload, AudioLines, Link2, Cloud, ImagePlus, Tv, X, Loader2
 } from 'lucide-react';
 import { api } from '../services/api';
 
@@ -22,6 +22,14 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange, placeh
   const [videoCover, setVideoCover] = useState('');
   const [videoLoading, setVideoLoading] = useState(false);
   const [videoError, setVideoError] = useState('');
+  const audioInputRef = useRef<HTMLInputElement>(null);
+  const [showLinkModal, setShowLinkModal] = useState(false);
+  const [linkText, setLinkText] = useState('');
+  const [linkUrl, setLinkUrl] = useState('');
+  const [showNetdiskModal, setShowNetdiskModal] = useState(false);
+  const [netdiskUrl, setNetdiskUrl] = useState('');
+  const [netdiskText, setNetdiskText] = useState('');
+  const [netdiskPwd, setNetdiskPwd] = useState('');
 
   const resetVideoModal = () => {
     setVideoUrl('');
@@ -149,6 +157,48 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange, placeh
     }
   };
 
+  // 上传音频
+  const handleAudioUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const data = await api.uploadAudio(file);
+      const name = file.name.replace(/\.[^.]+$/, '');
+      insertText(`<audio src="${data.url}" controls title="${name}"></audio>`, '');
+    } catch (err: any) {
+      alert('上传失败：' + err.message);
+    } finally {
+      setUploading(false);
+      e.target.value = '';
+    }
+  };
+
+  // 插入文字链接
+  const handleInsertLink = () => {
+    const url = linkUrl.trim();
+    if (!url) return;
+    const text = linkText.trim() || url;
+    insertText(`[${text}](${url})`, '');
+    setShowLinkModal(false);
+    setLinkUrl('');
+    setLinkText('');
+  };
+
+  // 插入网盘按钮
+  const handleInsertNetdisk = () => {
+    const url = netdiskUrl.trim();
+    if (!url) return;
+    const text = netdiskText.trim() || '点击下载资源';
+    const pwd = netdiskPwd.trim();
+    const label = pwd ? `${text}｜提取码：${pwd}` : text;
+    insertText(`[${label}](${url})`, '');
+    setShowNetdiskModal(false);
+    setNetdiskUrl('');
+    setNetdiskText('');
+    setNetdiskPwd('');
+  };
+
   const toolbarItems = [
     { icon: Heading, title: '标题', action: () => insertText('## ', '') },
     { icon: Bold, title: '加粗', action: () => insertText('**', '**') },
@@ -176,19 +226,19 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange, placeh
       action: () => setShowVideoModal(true)
     },
     {
-      icon: Video,
-      title: '插入视频',
-      action: () => insertText('<video src="视频URL" controls width="100%"></video>', '')
-    },
-    {
       icon: AudioLines,
-      title: '插入音频',
-      action: () => insertText('<audio src="音频URL" controls></audio>', '')
+      title: '上传音频',
+      action: () => audioInputRef.current?.click()
     },
     {
-      icon: Globe,
-      title: '嵌入网页',
-      action: () => insertText('<iframe src="网页URL" frameborder="0" allowfullscreen width="100%" height="400"></iframe>', '')
+      icon: Link2,
+      title: '插入链接',
+      action: () => setShowLinkModal(true)
+    },
+    {
+      icon: Cloud,
+      title: '插入网盘',
+      action: () => setShowNetdiskModal(true)
     },
   ];
 
@@ -224,6 +274,13 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange, placeh
           type="file"
           accept="image/jpeg,image/png,image/gif,image/webp"
           onChange={handleImageUpload}
+          className="hidden"
+        />
+        <input
+          ref={audioInputRef}
+          type="file"
+          accept="audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/flac,audio/aac,.mp3,.wav,.ogg,.m4a,.flac,.aac"
+          onChange={handleAudioUpload}
           className="hidden"
         />
       </div>
@@ -328,6 +385,129 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange, placeh
                 className="px-4 py-2 text-sm bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition-colors"
               >
                 插入视频卡片
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 插入链接弹窗 */}
+      {showLinkModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                <Link2 size={20} className="text-sky-500" />
+                插入链接
+              </h3>
+              <button type="button" onClick={() => setShowLinkModal(false)} className="p-1 text-slate-400 hover:text-slate-600 transition-colors">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="space-y-3 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">显示文字 <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  value={linkText}
+                  onChange={(e) => setLinkText(e.target.value)}
+                  placeholder="例如：查看完整教程"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  autoFocus
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">跳转网址 <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  placeholder="https://..."
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowLinkModal(false)}
+                className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors whitespace-nowrap"
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                onClick={handleInsertLink}
+                className="px-4 py-2 text-sm bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition-colors whitespace-nowrap"
+              >
+                插入链接
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 插入网盘弹窗 */}
+      {showNetdiskModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                <Cloud size={20} className="text-sky-500" />
+                插入网盘
+              </h3>
+              <button type="button" onClick={() => setShowNetdiskModal(false)} className="p-1 text-slate-400 hover:text-slate-600 transition-colors">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="space-y-3 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">网盘分享链接 <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  value={netdiskUrl}
+                  onChange={(e) => setNetdiskUrl(e.target.value)}
+                  placeholder="https://pan.baidu.com/s/... 或 https://www.123pan.com/s/..."
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  autoFocus
+                />
+                <p className="text-xs text-slate-400 mt-1">支持百度网盘、123云盘、阿里云盘、夸克网盘等，自动识别平台</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">显示文字</label>
+                <input
+                  type="text"
+                  value={netdiskText}
+                  onChange={(e) => setNetdiskText(e.target.value)}
+                  placeholder="点击下载资源"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">提取码（选填）</label>
+                <input
+                  type="text"
+                  value={netdiskPwd}
+                  onChange={(e) => setNetdiskPwd(e.target.value)}
+                  placeholder="如：abcd"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowNetdiskModal(false)}
+                className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors whitespace-nowrap"
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                onClick={handleInsertNetdisk}
+                className="px-4 py-2 text-sm bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition-colors whitespace-nowrap"
+              >
+                插入网盘
               </button>
             </div>
           </div>
