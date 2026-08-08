@@ -29,7 +29,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // 上传文件静态托管（所有环境）
-const uploadsPath = path.resolve(__dirname, '../../public/uploads');
+const uploadsPath = path.resolve(__dirname, '../public/uploads');
 app.use('/uploads', express.static(uploadsPath));
 
 // 生产环境：提供静态文件
